@@ -30,10 +30,4 @@ jobs:
           git merge upstream/main --no-edit
           git push origin main
           
-          # 2. Sync the 'dockerCI/CD' branch
-          # Checkout the dockerCI/CD branch from origin (your fork)
-          git checkout -B dockerCI/CD origin/dockerCI/CD
-          # Merge the upstream dockerCI/CD branch into it
-          git merge upstream/dockerCI/CD --no-edit
-          # Push the updated branch back to your fork
-          git push origin dockerCI/CD
+          
