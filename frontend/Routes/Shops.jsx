@@ -94,7 +94,7 @@ function Shops() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const json = await api.getPublic('getCategories.php');
+                const json = await api.getPublic('search/getCategories.php');
                 if (json.vehicles && json.services) {
                     setVehicleFilters(json.vehicles);
                     setServiceFilters(json.services);
@@ -314,7 +314,7 @@ function Shops() {
                 if (searchName) params.name = searchName;
                 if (needsTow) params.needs_tow = 'true';
 
-                const jsonResponse = await api.get('search.php', params);
+                const jsonResponse = await api.get('search/search.php', params);
                 setShopsList(jsonResponse.data);
             } catch (err) {
                 if (err.status === 401) {

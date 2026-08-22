@@ -26,7 +26,7 @@ function Sign({ setShowSignIn }) {
         setError("");
 
         try {
-            const data = await api.postPublic('login.php', { email, password });
+            const data = await api.postPublic('auth/login.php', { email, password });
 
             if (typeof setShowSignIn === 'function') {
                 setShowSignIn(false);

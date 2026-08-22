@@ -83,21 +83,23 @@ const LandingImage = () => {
         >
             {/* Background Images Cross-Fade */}
             {slides.map((slide, index) => (
-                <div
+                <img
                     key={index}
-                    className={`absolute inset-0 z-0 w-full h-full bg-cover bg-center`}
-                    style={{ 
-                        backgroundImage: `url(${slide.image})`,
-                        transform: index === currentSlide ? 'scale(1.05)' : 'scale(1)',
+                    src={slide.image}
+                    alt=""
+                    className={`absolute top-0 left-0 w-full h-full object-cover object-center ${index === currentSlide ? 'z-10' : 'z-0'}`}
+                    style={{
+                        transform: index === currentSlide ? 'scale(1.05) rotate(0.02deg) translateZ(0)' : 'scale(1) rotate(0.02deg) translateZ(0)',
                         opacity: index === currentSlide ? 1 : 0,
-                        pointerEvents: index === currentSlide ? 'auto' : 'none',
-                        transition: 'opacity 1000ms ease-in-out, transform 6000ms ease-out'
+                        pointerEvents: 'none',
+                        transition: 'opacity 1000ms ease-in-out, transform 6000ms ease-out',
+                        willChange: 'transform, opacity',
+                        WebkitBackfaceVisibility: 'hidden',
+                        backfaceVisibility: 'hidden',
+                        transformOrigin: 'center center'
                     }}
-                ></div>
-            ))}
-
-            {/* Dark Gradient Overlay for premium feel and text readability */}
-            <div className="absolute inset-0 z-10 w-full h-full bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                />
+            ))}<div className="absolute inset-0 z-10 w-full h-full bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
 
             {/* Content Container */}
             <div className="relative z-20 w-full max-w-2xl">

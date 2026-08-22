@@ -13,7 +13,7 @@ const FONT = "'Segoe UI', system-ui, sans-serif";
 const STATUS_CONFIG = {
     Pending:       { label: "Pending",     color: "#D97706",  bg: "rgba(217,119,6,0.10)",  icon: faClock,        desc: "Your request has been sent. Waiting for the shop to accept." },
     Accepted:      { label: "Accepted",    color: "#2563EB",  bg: "#EDF3FF",               icon: faCircleCheck,  desc: "The shop accepted your request! Go to Notifications to confirm your booking." },
-    Confirmed:     { label: "Confirmed",   color: "#0D9488",  bg: "rgba(13,148,136,0.10)", icon: faHandshake,    desc: "" },
+    Confirmed:     { label: "Confirmed",   color: "#16A34A",  bg: "rgba(22, 163, 74,0.10)", icon: faHandshake,    desc: "" },
     "In Progress": { label: "In Progress", color: "#A855F7",  bg: "rgba(168,85,247,0.10)", icon: faWrench,       desc: "Your vehicle is currently being repaired." },
 };
 
@@ -59,7 +59,7 @@ export default function RepairStatus({targetRequestId }) {
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const data = await api.get("getCustomerRequest.php");
+                const data = await api.get("customer/getCustomerRequest.php");
                 if (data.success) {
                     const ongoing = (data.data || []).filter(r =>
                         ONGOING_STATUSES.includes(r.status)
@@ -180,18 +180,18 @@ export default function RepairStatus({targetRequestId }) {
                                         <div
                                             className="flex items-center gap-3.5 border rounded-2xl py-4 px-5"
                                             style={{
-                                                background: "linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(22,163,74,0.06) 100%)",
-                                                borderColor: "rgba(13,148,136,0.30)",
+                                                background: "linear-gradient(135deg, rgba(22, 163, 74,0.08) 0%, rgba(22,163,74,0.06) 100%)",
+                                                borderColor: "rgba(22, 163, 74,0.30)",
                                             }}
                                         >
                                             <div
                                                 className="w-11 h-11 rounded-full flex-shrink-0 flex items-center justify-center"
-                                                style={{ background: "rgba(13,148,136,0.12)" }}
+                                                style={{ background: "rgba(22, 163, 74,0.12)" }}
                                             >
                                                 <span className="text-[22px]">🚛</span>
                                             </div>
                                             <div>
-                                                <p className="text-[13px] font-bold m-0" style={{ color: "#0D9488" }}>
+                                                <p className="text-[13px] font-bold m-0" style={{ color: "#16A34A" }}>
                                                     Your tow truck is on the way!
                                                 </p>
                                                 <p className="text-xs text-gray-500 mt-0.5 mb-0">
@@ -200,7 +200,7 @@ export default function RepairStatus({targetRequestId }) {
                                             </div>
                                             <span
                                                 className="ml-auto flex-shrink-0 rounded-full py-1 px-3 text-[11px] font-bold"
-                                                style={{ background: "rgba(13,148,136,0.12)", color: "#0D9488" }}
+                                                style={{ background: "rgba(22, 163, 74,0.12)", color: "#16A34A" }}
                                             >
                                                 En Route
                                             </span>
@@ -238,9 +238,9 @@ export default function RepairStatus({targetRequestId }) {
                                             {STEPS.map((step, idx) => {
                                                 const done         = idx < currentIdx;
                                                 const active       = idx === currentIdx;
-                                                const iconColor    = done ? "#16A34A" : active ? "#0D9488" : "#CBD5E1";
-                                                const circleBg     = done ? "rgba(22,163,74,0.08)" : active ? "rgba(13,148,136,0.10)" : "#FFFFFF";
-                                                const circleBorder = done ? "#16A34A" : active ? "#0D9488" : "#E5E7EB";
+                                                const iconColor    = done ? "#16A34A" : active ? "#16A34A" : "#CBD5E1";
+                                                const circleBg     = done ? "rgba(22,163,74,0.08)" : active ? "rgba(22, 163, 74,0.10)" : "#FFFFFF";
+                                                const circleBorder = done ? "#16A34A" : active ? "#16A34A" : "#E5E7EB";
 
                                                 const stepDesc = active
                                                     ? (step.key === "Confirmed"
@@ -258,7 +258,7 @@ export default function RepairStatus({targetRequestId }) {
                                                                 style={{
                                                                     background: circleBg,
                                                                     border: `2.5px solid ${circleBorder}`,
-                                                                    boxShadow: active ? "0 0 0 6px rgba(13,148,136,0.10)" : "none",
+                                                                    boxShadow: active ? "0 0 0 6px rgba(22, 163, 74,0.10)" : "none",
                                                                 }}
                                                             >
                                                                 <FontAwesomeIcon icon={step.icon} className="text-[22px]" style={{ color: iconColor }} />
@@ -271,7 +271,7 @@ export default function RepairStatus({targetRequestId }) {
                                                             <div className="text-center">
                                                                 <p
                                                                     className="text-[13px] font-bold m-0"
-                                                                    style={{ color: active ? "#0D9488" : done ? "#16A34A" : "#9CA3AF" }}
+                                                                    style={{ color: active ? "#16A34A" : done ? "#16A34A" : "#9CA3AF" }}
                                                                 >
                                                                     {step.label}
                                                                 </p>

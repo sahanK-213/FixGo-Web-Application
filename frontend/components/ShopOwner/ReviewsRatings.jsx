@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar, faComments } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../src/services/api";
 
 
@@ -86,13 +88,12 @@ function Stars({ count, max = 5, size = 14 }) {
   return (
     <span className="inline-flex gap-0.5">
       {Array.from({ length: max }).map((_, i) => (
-        <span
+        <FontAwesomeIcon
           key={i}
+          icon={faStar}
           className={i < count ? "text-amber-500" : "text-gray-300"}
           style={{ fontSize: size }}
-        >
-          ★
-        </span>
+        />
       ))}
     </span>
   );
@@ -106,6 +107,31 @@ function ReviewsRatings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [highlightedReqId, setHighlightedReqId] = useState(null);
+
+  useEffect(() => {
+    const handleHighlight = (e) => {
+      if (e.detail) {
+        setHighlightedReqId(e.detail);
+        setActiveTab("All");
+        
+        setTimeout(() => {
+          const el = document.getElementById(`review-card-${e.detail}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+
+        setTimeout(() => {
+          setHighlightedReqId(null);
+        }, 3000);
+      }
+    };
+    
+    window.addEventListener("fixgo_highlight_review", handleHighlight);
+    return () => window.removeEventListener("fixgo_highlight_review", handleHighlight);
+  }, []);
+
   useEffect(() => {
     const shopId = getShopIdFromToken();
 
@@ -115,7 +141,7 @@ function ReviewsRatings() {
       return;
     }
 
-    api.get(`getShopReviews.php?shop_id=${shopId}`)
+    api.get(`shop/getShopReviews.php?shop_id=${shopId}`)
       .then((data) => {
         if (!data || !data.success) {
           setError(data?.message || "Failed to load reviews.");
@@ -198,8 +224,8 @@ function ReviewsRatings() {
         </div>
 
         <div className="flex flex-col items-center gap-2 min-w-[120px]">
-          <div className="w-[60px] h-[60px] rounded-full bg-[#F5EDFF] flex items-center justify-center">
-            <span className="text-xl">💬</span>
+          <div className="w-[60px] h-[60px] rounded-full bg-[#F5EDFF] flex items-center justify-center text-purple-600">
+            <FontAwesomeIcon icon={faComments} className="text-xl" />
           </div>
           <p className="text-4xl font-bold text-gray-900 m-0 leading-none">
             {totalReviews}
@@ -244,13 +270,15 @@ function ReviewsRatings() {
           filteredReviews.map((r, i) => {
             const initials = getInitials(r.customer_name);
             const color = getColorForName(r.customer_name);
+            const isHighlighted = highlightedReqId && String(highlightedReqId) === String(r.service_request_id);
 
             return (
               <div
                 key={r.id}
-                className={`py-4.5 px-5 ${
+                id={`review-card-${r.service_request_id}`}
+                className={`py-4.5 px-5 transition-all duration-500 ${
                   i < filteredReviews.length - 1 ? "border-b border-gray-50" : ""
-                }`}
+                } ${isHighlighted ? "bg-green-50" : ""}`}
               >
                 <div className="flex items-start gap-3">
                   <Avatar initials={initials} color={color} />

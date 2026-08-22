@@ -11,6 +11,7 @@ class CategoryController {
     }
 
     public function getAllCategories() {
+        RequestValidator::enforceMethod('GET');
         try {
             // Ask Model for the data statements
             $vehiclesStmt = $this->category->getVehicleCategories();

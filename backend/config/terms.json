@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "title": "Acceptance of Terms",
+        "icon": "FaFileSignature",
+        "content": "By accessing or using the FixGo platform (including our website, services, and mobile application), you agree to be bound by these Terms & Conditions. If you do not agree, please do not use our services. Your continued use of the platform signifies your acceptance of any future amendments to these terms."
+    },
+    {
+        "id": 2,
+        "title": "Description of Services",
+        "icon": "FaBookOpen",
+        "content": "FixGo connects vehicle owners seeking repair and maintenance services with third-party service providers (workshop owners). FixGo does not perform repairs, guarantee workshop availability, or take responsibility for repair quality. All repair agreements, appointments, and financial transactions are made directly between the customer and the workshop."
+    },
+    {
+        "id": 3,
+        "title": "User Obligations & Conduct",
+        "icon": "FaUserShield",
+        "content": "As a user of our platform, you agree to provide accurate, complete, and current information when registering an account. You must maintain the confidentiality of your account credentials and are fully responsible for all activities occurring under your account. You agree to interact with workshops and other platform users respectfully and in good faith, avoiding any fraudulent or harmful activity."
+    },
+    {
+        "id": 4,
+        "title": "Limitation of Liability",
+        "icon": "FaShieldAlt",
+        "content": "To the maximum extent permitted by law, FixGo shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our platform, or from service quality, pricing disputes, or vehicle damage caused by registered workshops. Workshops are independent businesses and are not agents or employees of FixGo."
+    },
+    {
+        "id": 5,
+        "title": "Modifications to Terms",
+        "icon": "FaEdit",
+        "content": "We reserve the right to modify these terms at any time. Updates will be posted on this page with an updated 'Last Updated' date. Your continued use of the platform after updates are posted constitutes your acceptance of the revised terms. We recommend reviewing this document periodically to stay informed of any changes."
+    }
+]

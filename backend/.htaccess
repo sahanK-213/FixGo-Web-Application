@@ -1,0 +1,19 @@
+# ----------------------------------------------------------------------
+# Security: Block access to internal directories and sensitive files
+# ----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block access to internal application directories
+    # (Only /api and /uploads should be publicly accessible)
+    RewriteRule ^(tests|config|cron|vendor|models|controllers|database)/ - [F,L]
+
+    # Block access to environment variables, composer files, and docker config
+    RewriteRule ^\.env - [F,L]
+    RewriteRule ^composer\.(json|lock) - [F,L]
+    RewriteRule ^Dockerfile - [F,L]
+    RewriteRule ^phpunit\.xml - [F,L]
+    
+    # Block access to hidden directories like .git or .phpunit.cache
+    RewriteRule ^\.(?!well-known) - [F,L]
+</IfModule>

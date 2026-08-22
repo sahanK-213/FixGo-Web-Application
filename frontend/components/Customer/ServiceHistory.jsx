@@ -14,7 +14,7 @@ const FONT = "'Segoe UI', system-ui, sans-serif";
 const STATUS_CONFIG = {
     Pending:       { label: "Pending",     color: "#D97706", bg: "rgba(217,119,6,0.10)",  icon: faClock       },
     Accepted:      { label: "Accepted",    color: "#2563EB", bg: "#EDF3FF",               icon: faCircleCheck },
-    Confirmed:     { label: "Confirmed",   color: "#0D9488", bg: "rgba(13,148,136,0.10)", icon: faHandshake   },
+    Confirmed:     { label: "Confirmed",   color: "#16A34A", bg: "rgba(22, 163, 74,0.10)", icon: faHandshake   },
     "In Progress": { label: "In Progress", color: "#A855F7", bg: "rgba(168,85,247,0.10)", icon: faWrench      },
     Completed:     { label: "Completed",   color: "#16A34A", bg: "rgba(22,163,74,0.08)",  icon: faFlag        },
     Cancelled:     { label: "Cancelled",   color: "#DC2626", bg: "#FEF2F2",               icon: faCircleXmark },
@@ -23,7 +23,7 @@ const STATUS_CONFIG = {
 const ACCENT_CYCLE = ["green", "teal", "blue", "violet", "yellow"];
 const ACCENT = {
     green:  { iconBg: "#EDF9F0", iconColor: "#16A34A", badgeBg: "#EDF9F0", badgeColor: "#16A34A" },
-    teal:   { iconBg: "rgba(13,148,136,0.10)", iconColor: "#0D9488", badgeBg: "rgba(13,148,136,0.10)", badgeColor: "#0D9488" },
+    teal:   { iconBg: "rgba(22, 163, 74,0.10)", iconColor: "#16A34A", badgeBg: "rgba(22, 163, 74,0.10)", badgeColor: "#16A34A" },
     blue:   { iconBg: "#EDF3FF", iconColor: "#2563EB", badgeBg: "#EDF3FF", badgeColor: "#2563EB" },
     violet: { iconBg: "#F5EDFF", iconColor: "#A855F7", badgeBg: "#F5EDFF", badgeColor: "#A855F7" },
     yellow: { iconBg: "rgba(217,119,6,0.10)", iconColor: "#D97706", badgeBg: "rgba(217,119,6,0.10)", badgeColor: "#D97706" },
@@ -33,9 +33,13 @@ const FILTERS = ["All Time", "Last 3 Months", "Last 6 Months", "This Year"];
 
 const isWithinFilter = (dateStr, filter) => {
     if (filter === "All Time" || !dateStr) return true;
-    const date   = new Date(dateStr);
-    const now    = new Date();
-    const months = filter === "Last 3 Months" ? 3 : filter === "Last 6 Months" ? 6 : 12;
+    const date = new Date(dateStr);
+    const now  = new Date();
+    if (filter === "This Year") {
+        // From 1 Jan of this calendar year
+        return date >= new Date(now.getFullYear(), 0, 1);
+    }
+    const months = filter === "Last 3 Months" ? 3 : 6; // "Last 3 Months" or "Last 6 Months"
     const cutoff = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
     return date >= cutoff;
 };
@@ -198,7 +202,7 @@ export default function ServiceHistory( ) {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const data = await api.get("getCustomerRequest.php");
+                const data = await api.get("customer/getCustomerRequest.php");
                 if (data.success) {
                     const finished = (data.data || []).filter(r =>
                         ["Completed", "Cancelled"].includes(r.status)
@@ -251,18 +255,21 @@ export default function ServiceHistory( ) {
                     </p>
                 </div>
 
-                {/* Filter dropdown */}
-                <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl py-2.5 px-4 text-sm shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-                    <FontAwesomeIcon icon={faCalendarDays} className="text-gray-400" />
+                {/* Filter dropdown — invisible select covers full pill, custom UI on top */}
+                <div className="relative flex items-center gap-2 bg-white border border-gray-200 rounded-xl py-2.5 px-4 text-sm shadow-[0_1px_4px_rgba(0,0,0,0.04)] cursor-pointer">
+                    {/* Custom visual display */}
+                    <FontAwesomeIcon icon={faCalendarDays} className="text-gray-400 flex-shrink-0 pointer-events-none" />
+                    <span className="text-sm text-gray-700 pointer-events-none" style={{ fontFamily: FONT }}>{filter}</span>
+                    <FontAwesomeIcon icon={faChevronDown} className="text-[11px] text-gray-400 pointer-events-none flex-shrink-0" />
+                    {/* Invisible select stretches over entire wrapper */}
                     <select
                         value={filter}
                         onChange={e => setFilter(e.target.value)}
-                        className="border-none outline-none text-sm text-gray-700 bg-transparent cursor-pointer"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         style={{ fontFamily: FONT }}
                     >
                         {FILTERS.map(f => <option key={f}>{f}</option>)}
                     </select>
-                    <FontAwesomeIcon icon={faChevronDown} className="text-[11px] text-gray-400" />
                 </div>
             </div>
 
@@ -286,22 +293,14 @@ export default function ServiceHistory( ) {
                         return (
                             <div
                                 key={record.id}
-                                className={`flex items-center gap-4 py-5 px-6 ${!isLast ? "border-b border-gray-100" : "border-b-0"}`}
+                                className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-4 sm:py-5 px-4 sm:px-6 ${!isLast ? "border-b border-gray-100" : "border-b-0"}`}
                             >
-                                {/* Timeline dot + line */}
-                                <div className="flex flex-col items-center self-stretch">
-                                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1" style={{ background: cfg.color }} />
-                                    {!isLast && (
-                                        <div className="w-px flex-1 bg-gray-200 mt-1" />
-                                    )}
-                                </div>
-
-                                {/* Icon */}
+                                {/* Status Icon */}
                                 <div
-                                    className="w-[52px] h-[52px] rounded-full flex-shrink-0 flex items-center justify-center"
+                                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex-shrink-0 flex items-center justify-center"
                                     style={{ background: cfg.bg }}
                                 >
-                                    <FontAwesomeIcon icon={cfg.icon} className="text-xl" style={{ color: cfg.color }} />
+                                    <FontAwesomeIcon icon={cfg.icon} className="text-lg" style={{ color: cfg.color }} />
                                 </div>
 
                                 {/* Content */}
@@ -338,7 +337,7 @@ export default function ServiceHistory( ) {
                                 {/* View Details button */}
                                 <button
                                     onClick={() => setSelectedRecord(record)}
-                                    className="flex-shrink-0 flex items-center gap-2 rounded-[10px] py-2 px-3.5 text-[13px] font-semibold bg-transparent cursor-pointer transition-colors duration-150"
+                                    className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 rounded-[10px] py-2 px-3.5 text-[13px] font-semibold bg-transparent cursor-pointer transition-colors duration-150"
                                     style={{ border: `1px solid ${cfg.color}`, color: cfg.color }}
                                     onMouseEnter={e => e.currentTarget.style.background = cfg.bg}
                                     onMouseLeave={e => e.currentTarget.style.background = "transparent"}

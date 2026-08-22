@@ -80,4 +80,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
 // 5. Core Dependencies (always needed by every endpoint)
 // ----------------------------------------------------------
 require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/../database/QueryBuilder.php';
 require_once __DIR__ . '/AuthMiddleware.php';
+require_once __DIR__ . '/RequestValidator.php';

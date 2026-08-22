@@ -89,9 +89,7 @@ export const Footer = () => {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <span>&copy; 2024 FixGo. All rights reserved.</span>
                     <div className="flex gap-4">
-                        <a href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
-                        <span className="text-slate-800">|</span>
-                        <a href="#" className="hover:text-gray-300 transition-colors">Terms of Service</a>
+                        <Link to="/terms-conditions" className="hover:text-gray-300 transition-colors">Terms & Conditions</Link>
                     </div>
                 </div>
             </div>

@@ -21,7 +21,7 @@ export const QuickSearchHub = ({ onRequireAuth }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const json = await api.getPublic('getCategories.php');
+                const json = await api.getPublic('search/getCategories.php');
                 setVehicleOptions(json.vehicles);
                 setServiceOptions(json.services);
             } catch (error) {

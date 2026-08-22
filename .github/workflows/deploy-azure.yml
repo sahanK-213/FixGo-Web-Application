@@ -1,0 +1,66 @@
+name: Deploy Backend to Azure App Service
+
+# Phase 1 constraint: Safety Lock 2
+# Currently restricted to manual execution. 
+# Once Azure is active, we will change this back to `on: push` for the dockerCI/CD branch.
+on:
+  push:
+    branches:
+      - dockerCI/CD
+  workflow_dispatch:
+
+jobs:
+  deploy-to-azure:
+    name: Build & Deploy Backend
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    
+    # Phase 1 constraint: Safety Lock 1
+    # Ensures this action NEVER tries to execute on your colleague's original repository.
+    # It will only fire on your specific fork.
+    if: github.repository == 'sahanK-213/FixGo-Web-Application'
+
+    steps:
+      # Step 1: Download your repository code into the runner
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Prepare the PHP environment
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # Updated to match Azure App Service runtime
+
+      # Step 3: Install PHP dependencies (production mode)
+      - name: Install Composer Dependencies
+        working-directory: ./backend
+        # --no-dev ensures we don't install testing tools like PHPUnit on the live server
+        run: composer install --no-dev --optimize-autoloader
+
+      # Step 4: Clean up development and test files before deployment
+      - name: Clean Deployment Package
+        working-directory: ./backend
+        run: |
+          rm -rf tests
+          rm -f .env.example
+          rm -f phpunit.xml
+          rm -f Dockerfile
+          rm -f all_tests.txt
+          rm -rf .phpunit.cache
+
+      # Step 5: Deploy the packaged backend folder to Azure
+      # Note: We will add these secrets to your GitHub repository once the Azure account is active
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./backend
+
+      # Step 6: Automatically Trigger Database Migrations via WebHook
+      - name: Run Database Migrations
+        if: success() # Only run if the deployment succeeded
+        run: |
+          echo "Triggering migrations..."
+          curl -sS -f -X GET "${{ secrets.AZURE_WEBAPP_URL }}/api/system/triggerMigrations.php" \
+          -H "X-Migration-Key: ${{ secrets.MIGRATION_API_KEY }}"

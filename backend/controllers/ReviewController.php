@@ -9,25 +9,12 @@ class ReviewController {
         $this->review = new Review($db);
     }
 
-    private function getUserIdFromToken() {
-        $headers = getallheaders();
-        $auth = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-        if (!preg_match('/Bearer\s(\S+)/', $auth, $m)) return null;
-        $parts = explode('.', $m[1]);
-        if (count($parts) < 2) return null;
-        $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
-        return $payload['user_id'] ?? $payload['id'] ?? null;
-    }
+    public function submit(array $payload) {
+        RequestValidator::enforceMethod('POST');
 
-    public function submit() {
-        $customerId = $this->getUserIdFromToken();
-        if (!$customerId) {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-            return;
-        }
+        $customerId = (int)$payload['user_id'];
 
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = RequestValidator::getJsonPayload();
         $serviceRequestId = $input['service_request_id'] ?? null;
         $shopId           = $input['shop_id'] ?? null;
         $rating           = (int)($input['rating'] ?? 0);
@@ -75,6 +62,12 @@ class ReviewController {
 
             $reviewId = $this->review->create($customerId, $shopId, $serviceRequestId, $rating, $comment);
 
+            // Create notification for the shop owner
+            $this->review->createShopNotification($customerId, $shopId, $serviceRequestId);
+
+            // Mark the customer's notification for this service request as read
+            $this->review->markCustomerNotificationAsRead($serviceRequestId, $customerId);
+
             echo json_encode(['success' => true, 'message' => 'Review submitted', 'review_id' => $reviewId]);
 
         } catch (PDOException $e) {
@@ -88,13 +81,10 @@ class ReviewController {
         }
     }
 
-    public function getCustomerReviews() {
-        $customerId = $this->getUserIdFromToken();
-        if (!$customerId) {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-            return;
-        }
+    public function getCustomerReviews(array $payload) {
+        RequestValidator::enforceMethod('GET');
+
+        $customerId = (int)$payload['user_id'];
 
         try {
             $reviews = $this->review->getByCustomer($customerId);
@@ -106,6 +96,7 @@ class ReviewController {
     }
 
     public function getShopReviews() {
+        RequestValidator::enforceMethod('GET');
         $shopId = $_GET['shop_id'] ?? null;
         if (!$shopId) {
             http_response_code(400);

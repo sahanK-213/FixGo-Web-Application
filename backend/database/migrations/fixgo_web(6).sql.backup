@@ -1,0 +1,1011 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: Aug 06, 2026 at 09:56 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `fixgo_web`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin`
+--
+
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `contactNumber` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin`
+--
+
+INSERT INTO `admin` (`id`, `name`, `contactNumber`) VALUES
+(14, 'FixGo System Admin', '0112223344');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `billingconfiguration`
+--
+
+CREATE TABLE `billingconfiguration` (
+  `id` int(11) NOT NULL,
+  `garagePerRequestFee` decimal(10,2) NOT NULL DEFAULT 500.00,
+  `serviceCenterPerRequestFee` decimal(10,2) NOT NULL DEFAULT 400.00,
+  `sparePartsMonthlyFee` decimal(10,2) NOT NULL DEFAULT 3000.00,
+  `garageGracePeriodDays` int(11) NOT NULL DEFAULT 14,
+  `serviceCenterGracePeriodDays` int(11) NOT NULL DEFAULT 14,
+  `sparePartsGracePeriodDays` int(11) NOT NULL DEFAULT 14,
+  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updatedByAdminId` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `billingconfiguration`
+--
+
+INSERT INTO `billingconfiguration` (`id`, `garagePerRequestFee`, `serviceCenterPerRequestFee`, `sparePartsMonthlyFee`, `garageGracePeriodDays`, `serviceCenterGracePeriodDays`, `sparePartsGracePeriodDays`, `updatedAt`, `updatedByAdminId`) VALUES
+(1, 500.00, 400.00, 3000.00, 14, 14, 14, '2026-07-31 08:20:34', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer`
+--
+
+CREATE TABLE `customer` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `contactNumber` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `profilePhoto` varchar(255) DEFAULT NULL,
+  `cancellation_strikes` int(11) NOT NULL DEFAULT 0,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `loyalty_points` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer`
+--
+
+INSERT INTO `customer` (`id`, `name`, `contactNumber`, `address`, `profilePhoto`, `cancellation_strikes`, `createdAt`, `loyalty_points`) VALUES
+(11, 'Kamal Perera', '0771234567', '12/3, Wijerama Road, Nugegoda', NULL, 0, '2026-06-01 08:00:00', 0),
+(12, 'Nirosha Fernando', '0712345678', '45, Station Road, Dehiwala', NULL, 0, '2026-06-05 10:00:00', 0),
+(13, 'Tharaka Silva', '0763456789', '78, Lake Drive, Battaramulla, Colombo 20', NULL, 0, '2026-06-10 14:00:00', 0),
+(15, 'Sahan Kavinda', '0716238638', '29/119, Senagama', 'uploads/customers/customer_6a5271f1315e11.87464993.jpeg', 0, '2026-07-11 22:10:17', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customervehicle`
+--
+
+CREATE TABLE `customervehicle` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `vehicle_category_id` int(11) DEFAULT NULL,
+  `brand` varchar(255) DEFAULT NULL,
+  `color` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations_tracker`
+--
+
+CREATE TABLE `migrations_tracker` (
+  `id` int(11) NOT NULL,
+  `migration_file` varchar(255) NOT NULL,
+  `executed_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `migrations_tracker`
+--
+
+INSERT INTO `migrations_tracker` (`id`, `migration_file`, `executed_at`) VALUES
+(1, '001_initial_baseline.sql', '2026-06-18 10:57:23'),
+(3, '004_createNewMigrationFromInitial.sql', '2026-06-20 04:41:22'),
+(4, '005_add_email_verification_fields.sql', '2026-06-20 04:41:22'),
+(5, '006_add_dummy_test_data.sql', '2026-06-20 10:03:44'),
+(6, '007_add_service_requesting_process_necessary_fields.sql', '2026-06-20 16:25:38'),
+(7, '008a_add_review_timestamp.sql', '2026-07-10 06:17:11'),
+(8, '009_seed_western_province.sql', '2026-07-11 11:48:02'),
+(9, '008b_add_token_expiry.sql', '2026-07-31 08:04:51'),
+(10, '010_billing_module.sql', '2026-07-31 08:20:35'),
+(11, '011_add_ignored_invoice_status.sql', '2026-08-02 03:14:21'),
+(12, '012_seed_billing_history.sql', '2026-08-02 04:07:30'),
+(13, '011b_add_password_reset_field.sql', '2026-08-03 12:57:14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `service_request_id` int(11) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL,
+  `isRead` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`id`, `user_id`, `service_request_id`, `type`, `title`, `message`, `isRead`) VALUES
+(1, 7, 6, 'NewRequest', 'New Service Request', NULL, 1),
+(2, 13, 6, 'Accepted', 'Request accepted', NULL, 1),
+(3, 7, 6, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 1),
+(4, 13, 6, 'In Progress', 'Repair status: In Progress', NULL, 1),
+(5, 13, 6, 'Completed', 'Repair status: Completed', NULL, 1),
+(6, 7, 7, 'NewRequest', 'New Service Request', NULL, 1),
+(7, 13, 7, 'Accepted', 'Request accepted', NULL, 1),
+(8, 7, 7, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 1),
+(9, 13, 7, 'In Progress', 'Repair status: In Progress', NULL, 0),
+(10, 13, 7, 'Completed', 'Repair status: Completed', NULL, 0),
+(11, 7, 8, 'NewRequest', 'New Service Request', NULL, 1),
+(12, 15, 8, 'Accepted', 'Request accepted', NULL, 1),
+(13, 7, 8, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 1),
+(14, 15, 8, 'In Progress', 'Repair status: In Progress', NULL, 1),
+(15, 15, 8, 'Completed', 'Repair status: Completed', NULL, 1),
+(16, 7, 9, 'NewRequest', 'New Service Request', NULL, 1),
+(17, 15, 9, 'Accepted', 'Request accepted', NULL, 1),
+(18, 7, 9, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 1),
+(19, 15, 9, 'In Progress', 'Repair status: In Progress', NULL, 1),
+(20, 15, 9, 'Completed', 'Repair status: Completed', NULL, 1),
+(21, 1, 10, 'NewRequest', 'New Service Request', NULL, 0),
+(22, 5, 11, 'NewRequest', 'New Service Request', NULL, 0),
+(23, 15, 10, 'Accepted', 'Request accepted', NULL, 1),
+(24, 15, 11, 'Accepted', 'Request accepted', NULL, 1),
+(25, 1, 10, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 0),
+(26, 5, 11, 'CustomerCancelled', 'Customer cancelled booking', NULL, 0),
+(27, 2, 12, 'NewRequest', 'New Service Request', NULL, 0),
+(28, 5, 13, 'NewRequest', 'New Service Request', NULL, 0),
+(29, 15, 13, 'Accepted', 'Request accepted', NULL, 1),
+(30, 15, 12, 'Accepted', 'Request accepted', NULL, 1),
+(31, 2, 12, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 0),
+(32, 5, 13, 'CustomerCancelled', 'Customer cancelled booking', NULL, 0),
+(33, 15, 12, 'In Progress', 'Repair status: In Progress', NULL, 1),
+(34, 15, 12, 'Completed', 'Repair status: Completed', NULL, 1),
+(35, 15, 10, 'In Progress', 'Repair status: In Progress', NULL, 1),
+(36, 15, 10, 'Completed', 'Repair status: Completed', NULL, 1),
+(37, 5, 14, 'NewRequest', 'New Service Request', NULL, 0),
+(38, 7, 15, 'NewRequest', 'New Service Request', NULL, 1),
+(39, 15, 14, 'Accepted', 'Request accepted', NULL, 1),
+(40, 15, 15, 'Accepted', 'Request accepted', NULL, 1),
+(41, 5, 14, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 0),
+(42, 7, 16, 'NewRequest', 'New Service Request', NULL, 1),
+(43, 15, 16, 'Accepted', 'Request accepted', NULL, 1),
+(44, 7, 16, 'CustomerCancelled', 'Customer cancelled booking', NULL, 1),
+(45, 7, 17, 'NewRequest', 'New Service Request', NULL, 1),
+(46, 15, 17, 'Accepted', 'Request accepted', NULL, 1),
+(47, 7, 17, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 1),
+(48, 15, 17, 'In Progress', 'Repair status: In Progress', NULL, 1),
+(49, 15, 17, 'Completed', 'Repair status: Completed', NULL, 1),
+(60, 4, 20, 'NewRequest', 'New Service Request', NULL, 0),
+(61, 5, 21, 'NewRequest', 'New Service Request', NULL, 0),
+(67, 22, 23, 'NewRequest', 'New Service Request', NULL, 0),
+(68, 15, 23, 'Accepted', 'Request accepted', NULL, 1),
+(69, 22, 23, ' CustomerConfirmed', 'Customer confirmed booking', NULL, 0),
+(70, 15, 23, 'In Progress', 'Repair status: In Progress', NULL, 0),
+(71, 15, 23, 'Completed', 'Repair status: Completed', NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reportedcontent`
+--
+
+CREATE TABLE `reportedcontent` (
+  `id` int(11) NOT NULL,
+  `reporter_user_id` int(11) DEFAULT NULL,
+  `admin_id` int(11) DEFAULT NULL,
+  `reportedEntityType` varchar(255) DEFAULT NULL,
+  `reported_entity_id` int(11) DEFAULT NULL,
+  `reason` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `review`
+--
+
+CREATE TABLE `review` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `shop_id` int(11) DEFAULT NULL,
+  `service_request_id` int(11) DEFAULT NULL,
+  `rating` int(11) DEFAULT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `review`
+--
+
+INSERT INTO `review` (`id`, `customer_id`, `shop_id`, `service_request_id`, `rating`, `comment`, `created_at`) VALUES
+(1, 11, 1, 1, 5, 'Absolutely outstanding service! They identified the rattling noise within minutes — turned out to be a loose heat shield. Fixed quickly and at a very fair price. Will definitely return.', '2026-06-15 08:30:00'),
+(2, 12, 4, 2, 4, 'Very professional team and the service centre is clean and well-organised. Brake replacement was done perfectly. Slightly longer wait than expected but overall a great experience.', '2026-06-20 11:30:00'),
+(3, 13, 7, 3, 5, 'The tow truck arrived in under 25 minutes to Rajagiriya which I was amazed by. Engine diagnosis was thorough and the repair was completed the same day. Highly recommended for emergencies!', '2026-06-25 10:30:00'),
+(4, 11, 2, 4, 4, 'Good service and friendly staff. Oil change and tyre rotation done well within the appointment time. Pricing is reasonable. The waiting area could be improved but minor complaint.', '2026-07-01 05:30:00'),
+(5, 13, 7, 6, 5, 'Exceptional service. Very responsible people.', '2026-07-11 12:21:08'),
+(6, 13, 7, 7, 3, 'Average Service', '2026-07-11 16:33:08'),
+(7, 15, 7, 8, 4, 'Excellent Service', '2026-07-11 19:35:11'),
+(8, 15, 7, 9, 5, 'Excellent', '2026-07-11 20:04:54'),
+(9, 15, 7, 17, 5, 'Great', '2026-07-13 01:29:12'),
+(12, 15, 22, 23, 3, 'good', '2026-08-02 08:43:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `servicerequest`
+--
+
+CREATE TABLE `servicerequest` (
+  `id` int(11) NOT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `shop_id` int(11) DEFAULT NULL,
+  `vehicle_category_id` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `urgency_level` varchar(20) DEFAULT 'Normal',
+  `location` point DEFAULT NULL,
+  `pickup_landmark` varchar(255) DEFAULT NULL,
+  `preferred_date` date DEFAULT NULL,
+  `preferred_time` varchar(50) DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `vehicle_brand` varchar(255) DEFAULT NULL,
+  `vehicle_color` varchar(255) DEFAULT NULL,
+  `issue_category` varchar(100) DEFAULT NULL,
+  `requires_tow` tinyint(1) DEFAULT 0,
+  `dispatched_driver_name` varchar(255) DEFAULT NULL,
+  `dispatched_driver_phone` varchar(255) DEFAULT NULL,
+  `dispatched_truck_brand` varchar(255) DEFAULT NULL,
+  `dispatched_truck_color` varchar(255) DEFAULT NULL,
+  `dispatched_truck_plate` varchar(255) DEFAULT NULL,
+  `promised_eta` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `accepted_at` timestamp NULL DEFAULT NULL,
+  `confirmed_at` timestamp NULL DEFAULT NULL,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  `cancelled_at` timestamp NULL DEFAULT NULL,
+  `cancelled_by` enum('Customer','Shop','System') DEFAULT NULL,
+  `cancellation_reason` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `servicerequest`
+--
+
+INSERT INTO `servicerequest` (`id`, `customer_id`, `shop_id`, `vehicle_category_id`, `description`, `status`, `urgency_level`, `location`, `pickup_landmark`, `preferred_date`, `preferred_time`, `photo`, `vehicle_brand`, `vehicle_color`, `issue_category`, `requires_tow`, `dispatched_driver_name`, `dispatched_driver_phone`, `dispatched_truck_brand`, `dispatched_truck_color`, `dispatched_truck_plate`, `promised_eta`, `created_at`, `accepted_at`, `confirmed_at`, `completed_at`, `cancelled_at`, `cancelled_by`, `cancellation_reason`) VALUES
+(1, 11, 1, 2, 'Engine making a rattling noise on startup. Needs full inspection.', 'Completed', 'Normal', 0x0000000001010000002cd49ae61df75340857cd0b359b51b40, 'Near Liberty Roundabout, Colombo 03', '2026-06-15', '10:00 AM - 12:00 PM', NULL, 'Toyota Vitz', 'Silver', 'Engine', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-15 03:00:00', '2026-06-15 03:35:00', '2026-06-15 04:45:00', '2026-06-15 07:30:00', NULL, NULL, NULL),
+(2, 12, 4, 2, 'Brake pads worn out. Squeaking sound when braking.', 'Completed', 'Normal', 0x000000000101000000f4fdd478e9f65340a69bc420b0721b40, 'Near Mount Lavinia Hotel junction', '2026-06-20', '02:00 PM - 04:00 PM', NULL, 'Honda Fit', 'White', 'Brakes', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-20 06:30:00', '2026-06-20 07:15:00', '2026-06-20 08:40:00', '2026-06-20 11:00:00', NULL, NULL, NULL),
+(3, 13, 7, 2, 'Car broke down suddenly on Rajagiriya flyover. Needs tow and engine check.', 'Completed', 'Urgent', 0x000000000101000000e10b93a982f95340d122dbf97eaa1b40, 'Rajagiriya flyover, near McDonalds', NULL, NULL, NULL, 'Suzuki Alto', 'Blue', 'Engine', 1, NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-25 03:30:00', '2026-06-25 03:52:00', '2026-06-25 04:30:00', '2026-06-25 09:15:00', NULL, NULL, NULL),
+(4, 11, 2, 2, 'Routine oil change and tyre rotation needed before long trip.', 'Completed', 'Normal', 0x00000000010100000062105839b4f853407b14ae47e17a1b40, 'Nugegoda Town, near Majestic City', '2026-07-01', '08:00 AM - 10:00 AM', NULL, 'Nissan March', 'Black', 'Maintenance', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 01:30:00', '2026-07-01 02:00:00', '2026-07-01 02:45:00', '2026-07-01 04:30:00', NULL, NULL, NULL),
+(5, 12, 5, 1, 'Bike battery dead, cannot start. Need battery check and replacement.', 'Cancelled', 'Normal', 0x000000000101000000c3f5285c8ffa5340cdcccccccccc1b40, 'Kelaniya temple junction, main road', '2026-07-05', '03:00 PM - 05:00 PM', NULL, 'Honda CB150R', 'Red', 'Electrical', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-05 04:30:00', NULL, NULL, NULL, '2026-07-05 06:00:00', 'Customer', 'Found a closer mechanic to handle the issue.'),
+(6, 13, 7, 2, 'Tire punch', 'Completed', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Silver', 'Tire', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-11 12:15:58', '2026-07-11 12:17:58', '2026-07-11 12:19:05', '2026-07-11 12:20:15', NULL, NULL, NULL),
+(7, 13, 7, 2, 'Battery is not providing current', 'Completed', 'Urgent', 0x0000000001010000001a00008022fe5340f0b5310e00c21b40, '', NULL, NULL, 'uploads/serviceRequests/req_6a5259b07efbd.jpeg', 'BMW', 'Black', 'Battery', 1, 'Roshan Dissanayake', '0716238638', 'Tata', 'Yellow', 'WP NA-7777', 26, '2026-07-11 14:56:48', '2026-07-11 14:59:58', '2026-07-11 15:00:21', '2026-07-11 16:32:48', NULL, NULL, NULL),
+(8, 15, 7, 2, 'Desciption', 'Completed', 'Normal', 0x0000000001010000001a00008022fe5340f0b5310e00c21b40, '', NULL, NULL, 'uploads/serviceRequests/req_6a527a5a69880.jpeg', 'Audi', 'Black', 'Battery', 1, 'Sahan Kavinda', '0716238638', 'Tata', 'Yellow', 'WP NA-7777', 26, '2026-07-11 17:16:10', '2026-07-11 17:17:02', '2026-07-11 17:17:59', '2026-07-11 19:34:50', NULL, NULL, NULL),
+(9, 15, 7, 2, 'Not working', 'Completed', 'Urgent', 0x0000000001010000000d0000405bf653404ab75e63f3ba1b40, '', NULL, NULL, NULL, 'Honda', 'White', 'Brakes', 1, 'Roshan Dissanayake', '0716238638', 'Tata', 'Yellow', 'WP NA-7777', 41, '2026-07-11 20:01:13', '2026-07-11 20:01:49', '2026-07-11 20:02:15', '2026-07-11 20:04:35', NULL, NULL, NULL),
+(10, 15, 1, 2, 'Battery dead', 'Completed', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Black', 'Battery', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-12 16:20:06', '2026-07-12 16:23:10', '2026-07-12 16:24:10', '2026-07-12 18:45:45', NULL, NULL, NULL),
+(11, 15, 5, 2, 'Battery not working', 'Cancelled', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Black', 'Battery', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-12 16:21:51', '2026-07-12 16:23:46', NULL, NULL, '2026-07-12 18:30:51', 'Customer', 'Customer declined the booking.'),
+(12, 15, 2, 2, 'Flat Tire', 'Completed', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Silver', 'Tire', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-12 18:31:54', '2026-07-12 18:34:16', '2026-07-12 18:34:48', '2026-07-12 18:44:59', NULL, NULL, NULL),
+(13, 15, 5, 2, 'Flated Tire', 'Cancelled', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Silver', 'Tire', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-12 18:32:30', '2026-07-12 18:32:58', NULL, NULL, '2026-07-12 18:43:45', 'Customer', 'Customer declined the booking.'),
+(14, 15, 5, 2, 'Engine Failure', 'Confirmed', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Black', 'Engine', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-12 18:48:49', '2026-07-12 18:50:05', '2026-07-12 18:50:48', NULL, NULL, NULL, NULL),
+(15, 15, 7, 2, 'Engine Failure', 'Cancelled', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, NULL, 'Toyota', 'Black', 'Engine', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-12 18:49:27', '2026-07-12 18:50:24', NULL, NULL, '2026-07-12 18:50:48', 'System', 'Customer confirmed a different shop for this incident.'),
+(16, 15, 7, 2, 'Engine fail', 'Cancelled', 'Normal', 0x0000000001010000000d0000405bf653404ab75e63f3ba1b40, '', NULL, NULL, 'uploads/serviceRequests/req_6a543db7955ad.jpeg', ' Toyota', 'Silver', 'Engine', 1, 'Roshan Dissanayake', '0716238638', 'Tata', 'Yellow', 'WP NA-7777', 41, '2026-07-13 01:21:59', '2026-07-13 01:22:37', NULL, NULL, '2026-07-13 01:23:53', 'Customer', 'Customer declined the booking.'),
+(17, 15, 7, 2, 'Battery fail', 'Completed', 'Normal', 0x0000000001010000000d0000405bf653404ab75e63f3ba1b40, '', NULL, NULL, 'uploads/serviceRequests/req_6a543e6a439fb.jpeg', 'Toyota', 'Black', 'Battery', 1, 'Roshan Dissanayake', '0716238638', 'Tata', 'Yellow', 'WP NA-7777', 41, '2026-07-13 01:24:58', '2026-07-13 01:25:41', '2026-07-13 01:26:25', '2026-07-13 01:28:50', NULL, NULL, NULL),
+(20, 15, 4, 2, 'Brake dead', 'Cancelled', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, '2026-07-25', '10:00 AM - 12:00 PM', 'uploads/serviceRequests/req_6a64f34de67e6.jpeg', 'Audi', 'Black', 'Brakes', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-25 17:33:01', NULL, NULL, NULL, NULL, 'System', 'Automatically cancelled due to shop inactivity'),
+(21, 15, 5, 1, 'Battery dead', 'Cancelled', 'Urgent', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, NULL, NULL, 'uploads/serviceRequests/req_6a64f4935bae0.jpeg', 'Bajaj Discovery', 'Red', 'Battery', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-25 17:38:27', NULL, NULL, NULL, NULL, 'System', 'Automatically cancelled due to shop inactivity'),
+(23, 15, 22, 2, 'All', 'Completed', 'Normal', 0x000000000101000000e78c28ed0dfe5340569fabadd89f1b40, NULL, '2026-08-04', '08:00 AM - 10:00 AM', NULL, 'Audi', 'Black', 'General Service', 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 08:42:34', '2026-08-02 08:42:52', '2026-08-02 08:43:01', '2026-08-02 08:43:22', NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shop`
+--
+
+CREATE TABLE `shop` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `contactNumber` varchar(255) DEFAULT NULL,
+  `owner` varchar(255) DEFAULT NULL,
+  `location` point DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `openTime` time DEFAULT NULL,
+  `closeTime` time DEFAULT NULL,
+  `isAvailable` tinyint(1) DEFAULT NULL,
+  `carriageService` tinyint(1) DEFAULT 0,
+  `BRN` varchar(255) DEFAULT NULL,
+  `profileImageURL` varchar(255) DEFAULT NULL,
+  `default_driver_name` varchar(255) DEFAULT NULL,
+  `default_driver_phone` varchar(255) DEFAULT NULL,
+  `default_truck_brand` varchar(255) DEFAULT NULL,
+  `default_truck_color` varchar(255) DEFAULT NULL,
+  `tow_truck_plate` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shop`
+--
+
+INSERT INTO `shop` (`id`, `name`, `address`, `contactNumber`, `owner`, `location`, `description`, `openTime`, `closeTime`, `isAvailable`, `carriageService`, `BRN`, `profileImageURL`, `default_driver_name`, `default_driver_phone`, `default_truck_brand`, `default_truck_color`, `tow_truck_plate`) VALUES
+(1, 'Colombo Auto Works', '32, Galle Road, Kollupitiya, Colombo 03', '0112456789', 'Ranjith Perera', 0x00000000010100000035ef384547f6534091ed7c3f359e1b40, 'Full-service garage specialising in engine overhaul, brake systems, and AC servicing.', '07:30:00', '18:00:00', 1, 0, 'PV/2019/1001', 'uploads/shopOwners/garage1.jpg', NULL, NULL, NULL, NULL, NULL),
+(2, 'Nugegoda Motors', '45, High Level Road, Nugegoda', '0112889733', 'Pradeep Jayasinghe', 0x0000000001010000005b423ee8d9f8534092cb7f48bf7d1b40, 'Trusted neighbourhood garage for quick repairs, oil changes, and tyre rotations.', '08:00:00', '18:30:00', 1, 0, 'PV/2018/2002', 'uploads/shopOwners/garage2.jpg', NULL, NULL, NULL, NULL, NULL),
+(3, 'Lanka Spare Parts Hub', '210, Panchikawatte Road, Colombo 10', '0112445599', 'M.H.M. Hameed', 0x0000000001010000001f85eb51b8f65340dc68006f81c41b40, 'One-stop shop for genuine OEM spare parts, lubricants, and accessories for Japanese and Korean vehicles.', '08:30:00', '17:30:00', 1, 0, 'PV/2020/3003', 'uploads/shopOwners/spare.jpeg', NULL, NULL, NULL, NULL, NULL),
+(4, 'Mount Lavinia Auto Service', '78, Galle Road, Mount Lavinia', '0112738899', 'Suresh Kumara', 0x000000000101000000f31fd26f5ff7534060764f1e166a1b40, 'Premium detailing, full body wash, interior cleaning, and computerised diagnostics.', '07:00:00', '19:00:00', 1, 0, 'PV/2017/4004', 'uploads/shopOwners/service.jpg', NULL, NULL, NULL, NULL, NULL),
+(5, 'Kelaniya Auto Repair', '15, Kandy Road, Kelaniya', '0112912345', 'Nalaka Bandara', 0x000000000101000000492eff21fdfa5340fdf675e09cd11b40, 'Specialising in electrical systems, suspension, and exhaust repairs for all local brands.', '08:00:00', '17:00:00', 1, 0, 'PV/2021/5005', 'uploads/shopOwners/garage3.webp', NULL, NULL, NULL, NULL, NULL),
+(6, 'Moratuwa Quick Fix Garage', '22, Rawathawatte Road, Moratuwa', '0112645566', 'Chaminda Wickrama', 0x000000000101000000bf7d1d3867f85340f2d24d6210181b40, 'Fast, affordable repairs for all makes. Clutch replacements, gearboxes, and steering systems.', '07:30:00', '17:30:00', 1, 0, 'PV/2016/6006', 'uploads/shopOwners/garage1.jpg', NULL, NULL, NULL, NULL, NULL),
+(7, 'Malabe Speed Auto Center', '56, Kaduwela Road, Malabe', '0114778899', 'Dasun Alwis', 0x000000000101000000d95f764f1efe5340b30c71ac8b9b1b40, '24/7 roadside recovery and full mechanical garage. Tow truck on standby at all times.', '00:00:00', '23:59:59', 1, 1, 'PV/2022/7007', 'uploads/shopOwners/garage2.jpg', 'Roshan Dissanayake', '0778891234', 'Tata', 'Yellow', 'WP NA-7777'),
+(8, 'Gampaha Vehicle Services', '118, Colombo Road, Gampaha', '0332223344', 'Thilina Rathnayake', 0x000000000101000000eb73b515fbff53403d2cd49ae65d1c40, 'Full vehicle servicing, periodic maintenance, and wheel alignment for all passenger vehicles.', '08:00:00', '18:00:00', 1, 0, 'PV/2015/8008', 'uploads/shopOwners/service.jpg', NULL, NULL, NULL, NULL, NULL),
+(9, 'Panadura Auto Spares', '67, Galle Road, Panadura', '0342567890', 'Rizwan Hamdhan', 0x000000000101000000d26f5f07cef953405f07ce1951da1a40, 'Retail stockist of body panels, belts, filters, and lubricants for commercial and passenger vehicles.', '08:30:00', '17:00:00', 1, 0, 'PV/2014/9009', 'uploads/shopOwners/spare.jpeg', NULL, NULL, NULL, NULL, NULL),
+(10, 'Negombo Auto Hub', '33, Colombo Road, Negombo', '0312234455', 'Lasantha Samaraweera', 0x000000000101000000cc7f48bf7df55340f7065f984cd51c40, 'General garage and roadside assistance for all vehicle types. Serving the Negombo coastal belt.', '07:30:00', '18:00:00', 1, 0, 'PV/2013/1010', 'uploads/shopOwners/garage3.webp', NULL, NULL, NULL, NULL, NULL),
+(22, 'Kavi Services', 'No 117, Maharagama', '0772349872', 'Kavi Bandara', 0x00000000010100000016d49a2607fb53403554092d026b1b40, 'All services', '08:00:00', '17:00:00', 1, 0, '', 'uploads/shopOwners/shop_6a6efef4c32943.62183135.jpg', '', '', '', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopcategory`
+--
+
+CREATE TABLE `shopcategory` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopcategory`
+--
+
+INSERT INTO `shopcategory` (`id`, `name`, `description`) VALUES
+(1, 'Garages', 'General automotive repair and mechanical fixes'),
+(2, 'Service Centers', 'Washing, detailing, and routine maintenance'),
+(3, 'Spare Parts', 'Retail auto parts, lubricants, and accessories');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopcategorymapping`
+--
+
+CREATE TABLE `shopcategorymapping` (
+  `id` int(11) NOT NULL,
+  `shop_id` int(11) DEFAULT NULL,
+  `shop_category_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopcategorymapping`
+--
+
+INSERT INTO `shopcategorymapping` (`id`, `shop_id`, `shop_category_id`) VALUES
+(1, 1, 1),
+(2, 2, 1),
+(3, 3, 3),
+(4, 4, 2),
+(5, 5, 1),
+(6, 6, 1),
+(7, 7, 1),
+(8, 8, 2),
+(9, 9, 3),
+(10, 10, 1),
+(15, 22, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopimage`
+--
+
+CREATE TABLE `shopimage` (
+  `id` int(11) NOT NULL,
+  `shop_id` int(11) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopimage`
+--
+
+INSERT INTO `shopimage` (`id`, `shop_id`, `url`) VALUES
+(1, 1, 'uploads/gallery/shop1_front.jpg'),
+(2, 1, 'uploads/gallery/shop1_interior.jpg'),
+(3, 2, 'uploads/gallery/shop2_front.jpg'),
+(4, 4, 'uploads/gallery/shop4_detailing.jpg'),
+(5, 7, 'uploads/gallery/shop7_towtruck.jpg'),
+(6, 7, 'uploads/gallery/shop7_garage.jpg'),
+(7, 10, 'uploads/gallery/shop10_front.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopinvoice`
+--
+
+CREATE TABLE `shopinvoice` (
+  `id` int(11) NOT NULL,
+  `shopId` int(11) NOT NULL,
+  `billingPeriodYear` int(4) NOT NULL,
+  `billingPeriodMonth` tinyint(2) NOT NULL,
+  `shopCategoryId` int(11) NOT NULL,
+  `rateSnapshot` decimal(10,2) NOT NULL,
+  `completedRequests` int(11) NOT NULL DEFAULT 0,
+  `totalAmount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `invoiceReference` varchar(40) NOT NULL,
+  `invoiceStatus` enum('Draft','Dispatched','Verification Pending','Overdue','Paid','Ignored') NOT NULL DEFAULT 'Draft',
+  `dispatchedAt` timestamp NULL DEFAULT NULL,
+  `dueDate` date DEFAULT NULL,
+  `paymentSlipUrl` varchar(500) DEFAULT NULL,
+  `paymentReference` varchar(255) DEFAULT NULL,
+  `slipSubmittedAt` timestamp NULL DEFAULT NULL,
+  `verifiedAt` timestamp NULL DEFAULT NULL,
+  `verifiedByAdminId` int(11) DEFAULT NULL,
+  `rejectionReason` text DEFAULT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopinvoice`
+--
+
+INSERT INTO `shopinvoice` (`id`, `shopId`, `billingPeriodYear`, `billingPeriodMonth`, `shopCategoryId`, `rateSnapshot`, `completedRequests`, `totalAmount`, `invoiceReference`, `invoiceStatus`, `dispatchedAt`, `dueDate`, `paymentSlipUrl`, `paymentReference`, `slipSubmittedAt`, `verifiedAt`, `verifiedByAdminId`, `rejectionReason`, `createdAt`, `updatedAt`) VALUES
+(64, 1, 2026, 5, 1, 500.00, 12, 6000.00, 'INV-202605-1-AAAA', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(65, 2, 2026, 5, 1, 500.00, 8, 4000.00, 'INV-202605-2-BBBB', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(66, 3, 2026, 5, 3, 3000.00, 0, 3000.00, 'INV-202605-3-CCCC', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(67, 4, 2026, 5, 2, 400.00, 15, 6000.00, 'INV-202605-4-DDDD', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(68, 5, 2026, 5, 1, 500.00, 5, 2500.00, 'INV-202605-5-EEEE', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(69, 6, 2026, 5, 1, 500.00, 18, 9000.00, 'INV-202605-6-FFFF', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(70, 7, 2026, 5, 1, 500.00, 4, 2000.00, 'INV-202605-7-GGGG', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(71, 8, 2026, 5, 2, 400.00, 20, 8000.00, 'INV-202605-8-HHHH', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(72, 9, 2026, 5, 3, 3000.00, 0, 3000.00, 'INV-202605-9-IIII', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(73, 10, 2026, 5, 1, 500.00, 10, 5000.00, 'INV-202605-10-JJJJ', 'Paid', '2026-06-01 04:30:00', '2026-06-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-06-01 04:30:00', '2026-08-02 04:07:30'),
+(75, 1, 2026, 6, 1, 500.00, 14, 7000.00, 'INV-202606-1-LLLL', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(76, 2, 2026, 6, 1, 500.00, 6, 3000.00, 'INV-202606-2-MMMM', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(77, 3, 2026, 6, 3, 3000.00, 0, 3000.00, 'INV-202606-3-NNNN', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(78, 4, 2026, 6, 2, 400.00, 22, 8800.00, 'INV-202606-4-OOOO', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(79, 5, 2026, 6, 1, 500.00, 8, 4000.00, 'INV-202606-5-PPPP', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(80, 6, 2026, 6, 1, 500.00, 11, 5500.00, 'INV-202606-6-QQQQ', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(81, 7, 2026, 6, 1, 500.00, 9, 4500.00, 'INV-202606-7-RRRR', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(82, 8, 2026, 6, 2, 400.00, 14, 5600.00, 'INV-202606-8-SSSS', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(83, 9, 2026, 6, 3, 3000.00, 0, 3000.00, 'INV-202606-9-TTTT', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(84, 10, 2026, 6, 1, 500.00, 12, 6000.00, 'INV-202606-10-UUUU', 'Paid', '2026-07-01 04:30:00', '2026-07-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-01 04:30:00', '2026-08-02 04:07:30'),
+(86, 1, 2026, 7, 1, 500.00, 16, 8000.00, 'INV-202607-1-WWWW', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(87, 2, 2026, 7, 1, 500.00, 10, 5000.00, 'INV-202607-2-XXXX', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(88, 3, 2026, 7, 3, 3000.00, 0, 3000.00, 'INV-202607-3-YYYY', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(89, 4, 2026, 7, 2, 400.00, 19, 7600.00, 'INV-202607-4-ZZZZ', 'Dispatched', '2026-08-01 04:30:00', '2026-08-01', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 06:50:02'),
+(90, 5, 2026, 7, 1, 500.00, 7, 3500.00, 'INV-202607-5-AAAA1', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(91, 6, 2026, 7, 1, 500.00, 14, 7000.00, 'INV-202607-6-BBBB1', 'Dispatched', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, 'Too late', '2026-08-01 04:30:00', '2026-08-02 06:50:02'),
+(92, 7, 2026, 7, 1, 500.00, 0, 0.00, 'INV-202607-7-CCCC1', 'Ignored', '2026-08-01 04:30:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(93, 8, 2026, 7, 2, 400.00, 17, 6800.00, 'INV-202607-8-DDDD1', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(94, 9, 2026, 7, 3, 3000.00, 0, 3000.00, 'INV-202607-9-EEEE1', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(95, 10, 2026, 7, 1, 500.00, 8, 4000.00, 'INV-202607-10-FFFF1', 'Paid', '2026-08-01 04:30:00', '2026-08-15', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-01 04:30:00', '2026-08-02 04:07:30'),
+(97, 1, 2026, 8, 1, 500.00, 0, 0.00, 'INV-202608-1-B5C5', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:15', '2026-08-02 09:01:28'),
+(98, 2, 2026, 8, 1, 500.00, 0, 0.00, 'INV-202608-2-5D39', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:15', '2026-08-02 09:01:28'),
+(99, 3, 2026, 8, 3, 3000.00, 0, 3000.00, 'INV-202608-3-21A9', 'Dispatched', '2026-08-02 09:01:28', '2026-08-16', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:15', '2026-08-02 09:01:28'),
+(100, 4, 2026, 8, 2, 400.00, 0, 0.00, 'INV-202608-4-5D7E', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:15', '2026-08-02 09:01:28'),
+(101, 5, 2026, 8, 1, 500.00, 0, 0.00, 'INV-202608-5-44D5', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:15', '2026-08-02 09:01:28'),
+(102, 6, 2026, 8, 1, 500.00, 0, 0.00, 'INV-202608-6-7B84', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:15', '2026-08-02 09:01:28'),
+(103, 7, 2026, 8, 1, 500.00, 0, 0.00, 'INV-202608-7-8A62', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:16', '2026-08-02 09:01:28'),
+(104, 8, 2026, 8, 2, 400.00, 0, 0.00, 'INV-202608-8-235A', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:16', '2026-08-02 09:01:28'),
+(105, 9, 2026, 8, 3, 3000.00, 0, 3000.00, 'INV-202608-9-1355', 'Dispatched', '2026-08-02 09:01:28', '2026-08-16', NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:16', '2026-08-02 09:01:28'),
+(106, 10, 2026, 8, 1, 500.00, 0, 0.00, 'INV-202608-10-AADD', 'Ignored', '2026-08-02 09:01:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-08-02 09:01:16', '2026-08-02 09:01:28'),
+(107, 22, 2026, 8, 2, 400.00, 1, 400.00, 'INV-202608-22-77D5', 'Paid', '2026-08-02 09:01:28', '2026-08-16', 'uploads/paymentSlips/slip_107_6a6f08619be00.jpg', 'TRX-2345', '2026-08-02 09:05:37', '2026-08-02 09:05:57', 14, NULL, '2026-08-02 09:01:16', '2026-08-02 09:05:57');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopservices`
+--
+
+CREATE TABLE `shopservices` (
+  `id` int(11) NOT NULL,
+  `shop_id` int(11) NOT NULL,
+  `category` varchar(100) NOT NULL,
+  `service_name` varchar(255) NOT NULL,
+  `starting_price` varchar(50) DEFAULT NULL,
+  `duration` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopservices`
+--
+
+INSERT INTO `shopservices` (`id`, `shop_id`, `category`, `service_name`, `starting_price`, `duration`) VALUES
+(1, 1, 'Mechanical', 'Full Engine Tune-up', 'Rs. 8,500', '3 Hours'),
+(2, 1, 'Mechanical', 'Brake Pad Replacement', 'Rs. 3,500', '1 Hour'),
+(3, 1, 'Maintenance', 'Oil & Filter Change', 'Rs. 2,500', '45 Mins'),
+(4, 1, 'Electrical', 'Electrical Diagnostics', 'Rs. 1,500', '30 Mins'),
+(5, 2, 'Mechanical', 'Clutch Replacement', 'Rs. 12,000', '4 Hours'),
+(6, 2, 'Maintenance', 'Oil Change & Top-up', 'Rs. 2,000', '30 Mins'),
+(7, 2, 'Mechanical', 'Tyre Rotation & Balancing', 'Rs. 1,200', '45 Mins'),
+(8, 3, 'Parts Supply', 'Genuine Engine Oil (4L)', 'Rs. 3,800', 'In Stock'),
+(9, 3, 'Parts Supply', 'OEM Air Filter', 'Rs. 1,200', 'In Stock'),
+(10, 3, 'Parts Supply', 'Car Battery (Japanese)', 'Rs. 22,000', 'In Stock'),
+(11, 4, 'Detailing', 'Full Body Wash & Wax', 'Rs. 4,500', '2 Hours'),
+(12, 4, 'Detailing', 'Interior Deep Clean', 'Rs. 6,500', '3 Hours'),
+(13, 4, 'Maintenance', 'Periodic Service (Full)', 'Rs. 9,000', '4 Hours'),
+(14, 7, 'Towing', 'Flatbed Tow (within 10km)', 'Rs. 4,500', 'Varies'),
+(15, 7, 'Towing', 'Flatbed Tow (10–25km)', 'Rs. 8,000', 'Varies'),
+(16, 7, 'Mechanical', 'Engine Diagnostics (OBD)', 'Rs. 2,500', '1 Hour'),
+(17, 7, 'Mechanical', 'Suspension & Steering Check', 'Rs. 1,800', '1 Hour'),
+(18, 8, 'Maintenance', 'Full Vehicle Service', 'Rs. 7,500', '3 Hours'),
+(19, 8, 'Mechanical', 'Wheel Alignment', 'Rs. 1,500', '45 Mins'),
+(20, 10, 'Mechanical', 'General Repairs', 'Rs. 3,000', '2 Hours'),
+(21, 10, 'Maintenance', 'Oil Change', 'Rs. 2,200', '30 Mins');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopvehiclecategories`
+--
+
+CREATE TABLE `shopvehiclecategories` (
+  `id` int(11) NOT NULL,
+  `shop_id` int(11) DEFAULT NULL,
+  `vehicle_category_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopvehiclecategories`
+--
+
+INSERT INTO `shopvehiclecategories` (`id`, `shop_id`, `vehicle_category_id`) VALUES
+(1, 1, 1),
+(2, 1, 2),
+(3, 2, 1),
+(4, 2, 2),
+(5, 3, 1),
+(6, 3, 2),
+(7, 3, 3),
+(8, 4, 2),
+(9, 5, 1),
+(10, 5, 2),
+(11, 6, 1),
+(12, 6, 2),
+(13, 6, 3),
+(14, 7, 1),
+(15, 7, 2),
+(16, 7, 3),
+(17, 8, 2),
+(18, 9, 1),
+(19, 9, 2),
+(20, 9, 3),
+(21, 10, 1),
+(22, 10, 2),
+(28, 22, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `userRole` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `isActive` tinyint(1) DEFAULT NULL,
+  `verification_token` varchar(255) DEFAULT NULL,
+  `is_email_verified` tinyint(1) DEFAULT 0,
+  `token_expiry` datetime DEFAULT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expiry` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `email`, `userRole`, `password`, `isActive`, `verification_token`, `is_email_verified`, `token_expiry`, `reset_token`, `reset_token_expiry`) VALUES
+(1, 'ranjith.autoworks@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(2, 'pradeep.motors@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(3, 'hameed.spareparts@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(4, 'suresh.servicecentre@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(5, 'nalaka.kelaniya@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(6, 'chaminda.moratuwa@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(7, 'dasun.malabe@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(8, 'thilina.gampaha@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(9, 'rizwan.panadura@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(10, 'lasantha.negombo@gmail.com', 'shop_owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(11, 'kamal.perera@gmail.com', 'customer', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(12, 'nirosha.fernando@gmail.com', 'customer', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(13, 'tharaka.silva@gmail.com', 'customer', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(14, 'admin@fixgo.lk', 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, NULL, 1, NULL, NULL, NULL),
+(15, 'sahankavinda213@gmail.com', 'customer', '$2y$10$ChzSVbv16JwWNYksSdQ8UOfdt5yL8y.MItAdsuF68H8k/47IiEMbu', 1, NULL, 1, '2026-07-11 23:10:17', NULL, NULL),
+(22, 'cst23067@std.uwu.ac.lk', 'shop_owner', '$2y$10$oQ086tCU5l/JUBGIePkaf.F4UcUAaW/yqQIax9htiPRaxSFydcDbS', 1, NULL, 1, '2026-08-02 14:55:24', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vehiclecategory`
+--
+
+CREATE TABLE `vehiclecategory` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `vehiclecategory`
+--
+
+INSERT INTO `vehiclecategory` (`id`, `name`, `description`) VALUES
+(1, '3 Wheelers & Bikes', 'Motorcycles, scooters, and tuk-tuks'),
+(2, '4 Wheelers', 'Cars, SUVs, vans, and standard passenger vehicles'),
+(3, 'Commercial Vehicles', 'Lorrys, trucks, and busses');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `billingconfiguration`
+--
+ALTER TABLE `billingconfiguration`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `billingConfiguration_ibfk_1` (`updatedByAdminId`);
+
+--
+-- Indexes for table `customer`
+--
+ALTER TABLE `customer`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `customervehicle`
+--
+ALTER TABLE `customervehicle`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `vehicle_category_id` (`vehicle_category_id`);
+
+--
+-- Indexes for table `migrations_tracker`
+--
+ALTER TABLE `migrations_tracker`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `migration_file` (`migration_file`);
+
+--
+-- Indexes for table `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `service_request_id` (`service_request_id`);
+
+--
+-- Indexes for table `reportedcontent`
+--
+ALTER TABLE `reportedcontent`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reporter_user_id` (`reporter_user_id`),
+  ADD KEY `admin_id` (`admin_id`);
+
+--
+-- Indexes for table `review`
+--
+ALTER TABLE `review`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_review` (`service_request_id`,`customer_id`),
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `shop_id` (`shop_id`),
+  ADD KEY `service_request_id` (`service_request_id`);
+
+--
+-- Indexes for table `servicerequest`
+--
+ALTER TABLE `servicerequest`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `shop_id` (`shop_id`),
+  ADD KEY `vehicle_category_id` (`vehicle_category_id`);
+
+--
+-- Indexes for table `shop`
+--
+ALTER TABLE `shop`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `shopcategory`
+--
+ALTER TABLE `shopcategory`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `shopcategorymapping`
+--
+ALTER TABLE `shopcategorymapping`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `shop_id` (`shop_id`),
+  ADD KEY `shop_category_id` (`shop_category_id`);
+
+--
+-- Indexes for table `shopimage`
+--
+ALTER TABLE `shopimage`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `shop_id` (`shop_id`);
+
+--
+-- Indexes for table `shopinvoice`
+--
+ALTER TABLE `shopinvoice`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `invoiceReference` (`invoiceReference`),
+  ADD UNIQUE KEY `uq_shopPeriod` (`shopId`,`billingPeriodYear`,`billingPeriodMonth`),
+  ADD KEY `idx_statusDue` (`invoiceStatus`,`dueDate`),
+  ADD KEY `idx_shopId` (`shopId`),
+  ADD KEY `idx_categoryPeriod` (`shopCategoryId`,`billingPeriodYear`,`billingPeriodMonth`),
+  ADD KEY `idx_invoiceStatus` (`invoiceStatus`),
+  ADD KEY `shopInvoice_ibfk_3` (`verifiedByAdminId`);
+
+--
+-- Indexes for table `shopservices`
+--
+ALTER TABLE `shopservices`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `shop_id` (`shop_id`);
+
+--
+-- Indexes for table `shopvehiclecategories`
+--
+ALTER TABLE `shopvehiclecategories`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `shop_id` (`shop_id`),
+  ADD KEY `vehicle_category_id` (`vehicle_category_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `vehiclecategory`
+--
+ALTER TABLE `vehiclecategory`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `billingconfiguration`
+--
+ALTER TABLE `billingconfiguration`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `customervehicle`
+--
+ALTER TABLE `customervehicle`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `migrations_tracker`
+--
+ALTER TABLE `migrations_tracker`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `notification`
+--
+ALTER TABLE `notification`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+
+--
+-- AUTO_INCREMENT for table `reportedcontent`
+--
+ALTER TABLE `reportedcontent`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `review`
+--
+ALTER TABLE `review`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `servicerequest`
+--
+ALTER TABLE `servicerequest`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
+-- AUTO_INCREMENT for table `shop`
+--
+ALTER TABLE `shop`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `shopcategory`
+--
+ALTER TABLE `shopcategory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `shopcategorymapping`
+--
+ALTER TABLE `shopcategorymapping`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `shopimage`
+--
+ALTER TABLE `shopimage`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `shopinvoice`
+--
+ALTER TABLE `shopinvoice`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
+
+--
+-- AUTO_INCREMENT for table `shopservices`
+--
+ALTER TABLE `shopservices`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `shopvehiclecategories`
+--
+ALTER TABLE `shopvehiclecategories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `vehiclecategory`
+--
+ALTER TABLE `vehiclecategory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `admin`
+--
+ALTER TABLE `admin`
+  ADD CONSTRAINT `admin_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `billingconfiguration`
+--
+ALTER TABLE `billingconfiguration`
+  ADD CONSTRAINT `billingConfiguration_ibfk_1` FOREIGN KEY (`updatedByAdminId`) REFERENCES `admin` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `customer`
+--
+ALTER TABLE `customer`
+  ADD CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `customervehicle`
+--
+ALTER TABLE `customervehicle`
+  ADD CONSTRAINT `customerVehicle_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `customerVehicle_ibfk_2` FOREIGN KEY (`vehicle_category_id`) REFERENCES `vehiclecategory` (`id`);
+
+--
+-- Constraints for table `notification`
+--
+ALTER TABLE `notification`
+  ADD CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `notification_ibfk_2` FOREIGN KEY (`service_request_id`) REFERENCES `servicerequest` (`id`);
+
+--
+-- Constraints for table `reportedcontent`
+--
+ALTER TABLE `reportedcontent`
+  ADD CONSTRAINT `reportedContent_ibfk_1` FOREIGN KEY (`reporter_user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `reportedContent_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`id`);
+
+--
+-- Constraints for table `review`
+--
+ALTER TABLE `review`
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`),
+  ADD CONSTRAINT `review_ibfk_3` FOREIGN KEY (`service_request_id`) REFERENCES `servicerequest` (`id`);
+
+--
+-- Constraints for table `servicerequest`
+--
+ALTER TABLE `servicerequest`
+  ADD CONSTRAINT `serviceRequest_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `serviceRequest_ibfk_2` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`),
+  ADD CONSTRAINT `serviceRequest_ibfk_3` FOREIGN KEY (`vehicle_category_id`) REFERENCES `vehiclecategory` (`id`);
+
+--
+-- Constraints for table `shop`
+--
+ALTER TABLE `shop`
+  ADD CONSTRAINT `shop_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `shopcategorymapping`
+--
+ALTER TABLE `shopcategorymapping`
+  ADD CONSTRAINT `shopCategoryMapping_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`),
+  ADD CONSTRAINT `shopCategoryMapping_ibfk_2` FOREIGN KEY (`shop_category_id`) REFERENCES `shopcategory` (`id`);
+
+--
+-- Constraints for table `shopimage`
+--
+ALTER TABLE `shopimage`
+  ADD CONSTRAINT `shopImage_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`);
+
+--
+-- Constraints for table `shopinvoice`
+--
+ALTER TABLE `shopinvoice`
+  ADD CONSTRAINT `shopInvoice_ibfk_1` FOREIGN KEY (`shopId`) REFERENCES `shop` (`id`),
+  ADD CONSTRAINT `shopInvoice_ibfk_2` FOREIGN KEY (`shopCategoryId`) REFERENCES `shopcategory` (`id`),
+  ADD CONSTRAINT `shopInvoice_ibfk_3` FOREIGN KEY (`verifiedByAdminId`) REFERENCES `admin` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `shopservices`
+--
+ALTER TABLE `shopservices`
+  ADD CONSTRAINT `shopServices_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `shopvehiclecategories`
+--
+ALTER TABLE `shopvehiclecategories`
+  ADD CONSTRAINT `shopVehicleCategories_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`),
+  ADD CONSTRAINT `shopVehicleCategories_ibfk_2` FOREIGN KEY (`vehicle_category_id`) REFERENCES `vehiclecategory` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

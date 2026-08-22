@@ -1,0 +1,67 @@
+name: FixGo Automated Tests (CI)
+
+# 1. THE TRIGGER
+# Wake up whenever code is pushed to the main branch
+on:
+  push:
+    branches: [ "main", "development", "dockerCI/CD" ]
+  pull_request:
+    branches: [ "main", "development", "dockerCI/CD" ]
+
+# 2. THE JOBS
+jobs:
+  build-and-test:
+    name: Build, Run, and Test
+    runs-on: ubuntu-22.04 # The temporary GitHub server
+    timeout-minutes: 10 # Automatically cancel if the job runs longer than 10 minutes
+    if: github.repository == 'Saranga2000-Creater/FixGo-Web-Application'
+    
+    steps:
+      # Step A: Download your repository code into the runner
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step B: Copy environment files (so Docker has the variables it needs)
+      - name: Setup Environment Variables
+        run: |
+          cp frontend/.env.example frontend/.env
+          cp backend/.env.example backend/.env
+
+      # Step C: Spin up the FixGo environment using Docker!
+      - name: Start Docker Containers
+        run: docker compose up -d
+
+      # Step D: Wait for Docker services to fully boot (Backend Composer & Frontend Vite take time)
+      - name: Wait for Services to Boot
+        run: |
+          echo "Waiting for Backend (port 8000)..."
+          timeout 180 bash -c 'until curl -s http://localhost:8000/ > /dev/null; do sleep 2; done'
+          echo "Waiting for Frontend (port 5173)..."
+          timeout 60 bash -c 'until curl -s http://localhost:5173/ > /dev/null; do sleep 2; done'
+          echo "Both services are responding! Giving Vite 15 seconds to finish compiling JS..."
+          sleep 15
+
+      - name: Debug Database State
+        if: always()
+        run: docker compose exec -T database mysql -u root -proot fixgo_db -e "SHOW TABLES;" || echo "Failed to show tables"
+
+      - name: Dump Docker Logs
+        if: always()
+        run: docker compose logs backend
+
+      # NEW STEP: Fix permissions for files created by Docker (like node_modules)
+      # Docker runs as 'root', so files it creates are owned by 'root'.
+      # The GitHub Runner needs ownership back so it can run 'npm ci' later.
+      - name: Fix File Permissions
+        run: sudo chown -R $USER:$USER .
+
+      # NEW STEP: Install Composer packages inside the backend container
+      - name: Install Backend Dependencies (Composer)
+        run: docker compose exec -T backend composer install
+
+      # Step E: Run PHPUnit Tests INSIDE the running backend container
+      # We use 'docker compose exec' to send a command into the container
+      - name: Run Backend Unit Tests (PHPUnit)
+        run: docker compose exec -T backend ./vendor/bin/phpunit --configuration phpunit.xml
+
+

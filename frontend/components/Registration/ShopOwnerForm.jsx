@@ -6,6 +6,9 @@ import { api } from "../../src/services/api";
 
 
 export default function ShopForm() {
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    });
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         ownerName: "",
@@ -34,12 +37,34 @@ export default function ShopForm() {
     const [shopImagePreview, setShopImagePreview] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [availableCategories, setAvailableCategories] = useState([]);
+    const [availableVehicleCategories, setAvailableVehicleCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Load the Google Maps API Script
-    const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-    });
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await api.getPublic("search/getCategories.php");
+                if (res?.services) {
+                    setAvailableCategories(res.services);
+                }
+                if (res?.vehicles) {
+                    setAvailableVehicleCategories(res.vehicles);
+                }
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    const getVehicleIcon = (name) => {
+        const lower = (name || "").toLowerCase();
+        if (lower.includes("bike") || lower.includes("3 wheel")) return "🏍️";
+        if (lower.includes("car") || lower.includes("4 wheel")) return "🚗";
+        if (lower.includes("commercial") || lower.includes("truck")) return "🚛";
+        return "⚙️";
+    };
 
 
     const handleChange = (e) => {
@@ -115,6 +140,33 @@ export default function ShopForm() {
             return;
         }
 
+        const trimEmail = formData.email.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!trimEmail || !emailRegex.test(trimEmail)) {
+            setError("Please enter a valid shop email address.");
+            return;
+        }
+
+        const trimPhone = formData.phone.trim();
+        const phoneRegex = /^(?:\+94\d{9}|0\d{9})$/;
+        if (!trimPhone || !phoneRegex.test(trimPhone)) {
+            setError("Please enter a valid shop phone number (e.g. +94112345678 or 0112345678).");
+            return;
+        }
+
+        const trimAddress = formData.address.trim();
+        const invalidAddressRegex = /^(n\/?a|none|nil|null|test|no|abc)$/i;
+        if (!trimAddress || trimAddress.length < 5 || invalidAddressRegex.test(trimAddress)) {
+            setError("Please enter a valid shop physical address (at least 5 characters; placeholders like N/A are not allowed).");
+            return;
+        }
+
+        const trimLicense = (formData.licenseNumber || "").trim();
+        if (trimLicense && !/^[a-zA-Z0-9\-\/]{3,30}$/.test(trimLicense)) {
+            setError("Please enter a valid Business License / BRN format (3-30 characters, alphanumeric, hyphens, or slashes).");
+            return;
+        }
+
         if (!formData.category) {
             setError("Please select a workshop category.");
             return;
@@ -125,8 +177,16 @@ export default function ShopForm() {
             return;
         }
 
-        if (!formData.description.trim()) {
+        const trimDescription = formData.description.trim();
+        if (!trimDescription) {
             setError("Please provide a description for your shop.");
+            return;
+        }
+
+        // Validate password strength (at least 8 chars, 1 uppercase, 1 lowercase, 1 digit)
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(formData.password)) {
+            setError("Password must be at least 8 characters long and include an uppercase letter, lowercase letter, and a number.");
             return;
         }
 
@@ -135,31 +195,37 @@ export default function ShopForm() {
             return;
         }
 
-        if (formData.password.length < 6) {
-            setError("Password must be at least 6 characters long.");
-            return;
-        }
+        let trimDriverName = "";
+        let trimDriverPhone = "";
+        let trimTruckBrand = "";
+        let trimTruckColor = "";
+        let trimTowPlate = "";
 
         if (formData.providesCarriage) {
-            const trimDriverName = formData.defaultDriverName.trim();
+            trimDriverName = formData.defaultDriverName.trim();
             if (!trimDriverName || trimDriverName.length < 2 || /^\d+$/.test(trimDriverName) || !personNameRegex.test(trimDriverName)) {
                 setError("Please enter a valid truck driver name (letters only, at least 2 characters).");
                 return;
             }
-            if (!formData.defaultDriverPhone.trim()) {
-                setError("Please provide the driver's phone number.");
+            trimDriverPhone = formData.defaultDriverPhone.trim();
+            if (!trimDriverPhone || !phoneRegex.test(trimDriverPhone)) {
+                setError("Please enter a valid driver phone number (e.g. +94771234567 or 0771234567).");
                 return;
             }
-            if (!formData.defaultTruckBrand.trim()) {
-                setError("Please provide the truck brand name.");
+            trimTruckBrand = formData.defaultTruckBrand.trim();
+            if (!trimTruckBrand || trimTruckBrand.length < 2 || invalidAddressRegex.test(trimTruckBrand) || !/^[a-zA-Z0-9\s\.\'-]{2,50}$/.test(trimTruckBrand)) {
+                setError("Please enter a valid truck brand name (e.g. Isuzu, Toyota).");
                 return;
             }
-            if (!formData.defaultTruckColor.trim()) {
-                setError("Please provide the truck color.");
+            trimTruckColor = formData.defaultTruckColor.trim();
+            if (!trimTruckColor || trimTruckColor.length < 3 || invalidAddressRegex.test(trimTruckColor) || !/^[a-zA-Z\s\-]{3,30}$/.test(trimTruckColor)) {
+                setError("Please enter a valid truck color (e.g. White, Blue).");
                 return;
             }
-            if (!formData.towTruckPlate.trim()) {
-                setError("Please provide the truck vehicle plate number.");
+            trimTowPlate = formData.towTruckPlate.trim();
+            const plateRegex = /^(?:(?:WP|CP|SP|NP|EP|NW|NC|UP|SG)[\s\-]?)?(?:[a-zA-Z]{1,3}|\d{1,3})[\s\-]?\d{4}$/i;
+            if (!trimTowPlate || !plateRegex.test(trimTowPlate)) {
+                setError("Please enter a valid vehicle number in standard format (e.g. WP GA-1234, GA-1234, or CAB-1234).");
                 return;
             }
         }
@@ -172,33 +238,33 @@ export default function ShopForm() {
         setLoading(true);
 
         const payload = new FormData();
-        payload.append("ownerName", formData.ownerName);
-        payload.append("shopName", formData.shopName);
-        payload.append("email", formData.email);
-        payload.append("phone", formData.phone);
-        payload.append("address", formData.address);
-        payload.append("licenseNumber", formData.licenseNumber);
+        payload.append("ownerName", trimOwnerName);
+        payload.append("shopName", trimShopName);
+        payload.append("email", trimEmail);
+        payload.append("phone", trimPhone);
+        payload.append("address", trimAddress);
+        payload.append("licenseNumber", trimLicense);
         payload.append("openTime", formData.openTime);
         payload.append("closeTime", formData.closeTime);
         payload.append("providesCarriage", formData.providesCarriage ? "1" : "0");
         payload.append("category", formData.category);
         payload.append("vehicleCategory", JSON.stringify(formData.vehicleCategory));
-        payload.append("description", formData.description);
+        payload.append("description", trimDescription);
         payload.append("latitude", formData.latitude);
         payload.append("longitude", formData.longitude);
         payload.append("password", formData.password);
         payload.append("shopImage", shopImage);
-        payload.append("defaultDriverName", formData.defaultDriverName);
-        payload.append("defaultDriverPhone", formData.defaultDriverPhone);
-        payload.append("defaultTruckBrand", formData.defaultTruckBrand);
-        payload.append("defaultTruckColor", formData.defaultTruckColor);
-        payload.append("towTruckPlate", formData.towTruckPlate);
+        payload.append("defaultDriverName", trimDriverName);
+        payload.append("defaultDriverPhone", trimDriverPhone);
+        payload.append("defaultTruckBrand", trimTruckBrand);
+        payload.append("defaultTruckColor", trimTruckColor);
+        payload.append("towTruckPlate", trimTowPlate);
 
         try {
-            await api.postPublic('registerShop.php', payload);
+            await api.postPublic('auth/registerShop.php', payload);
             setSuccess(true);
             setTimeout(() => {
-                navigate("/verify-email");
+                navigate("/verify-email", { state: { email: trimEmail } });
             }, 4000);
         } catch (err) {
             setError(err.message || "Something went wrong. Please try again.");
@@ -217,7 +283,7 @@ export default function ShopForm() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">Verification Email Sent!</h3>
                 <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                    Thank you for registering! We've sent a 6-digit OTP to <strong className="text-gray-800">{formData.email}</strong>. 
+                    Thank you for registering! We've sent a 6-digit OTP to <strong className="text-gray-800">{formData.email}</strong>.
                     Please check your inbox and enter the OTP to activate your account.
                 </p>
                 <button
@@ -325,39 +391,37 @@ export default function ShopForm() {
                             className="mt-1 block w-full rounded-lg border border-gray-300 p-2.5 text-sm bg-white focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
                         >
                             <option value="">Select Category</option>
-                            <option value="Garages">Garages</option>
-                            <option value="Service centers">Service centers</option>
-                            <option value="Spare parts">Spare parts</option>
+                            {availableCategories.map((cat) => (
+                                <option key={cat.id} value={cat.name || cat.label}>
+                                    {cat.name || cat.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className="md:col-span-2">
                         <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">Vehicle Categories Serviced</label>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            {[
-                                { id: "bikes", val: "3 wheelers and bikes", label: "3 Wheelers & Bikes", icon: "🏍️" },
-                                { id: "cars", val: "4 wheelers", label: "4 Wheelers", icon: "🚗" },
-                                { id: "commercial", val: "commercial vehicles", label: "Commercial Vehicles", icon: "🚛" }
-                            ].map((item) => {
-                                const isChecked = Array.isArray(formData.vehicleCategory) && formData.vehicleCategory.includes(item.val);
+                            {availableVehicleCategories.map((item) => {
+                                const val = item.name || item.label;
+                                const isChecked = Array.isArray(formData.vehicleCategory) && formData.vehicleCategory.includes(val);
                                 return (
                                     <label
                                         key={item.id}
-                                        className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 select-none ${
-                                            isChecked 
-                                                ? "border-green-500 bg-green-50/50 shadow-sm text-green-950 font-semibold" 
+                                        className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 select-none ${isChecked
+                                                ? "border-green-500 bg-green-50/50 shadow-sm text-green-950 font-semibold"
                                                 : "border-gray-200 bg-white hover:border-gray-300 text-gray-700 hover:bg-gray-50/50"
-                                        }`}
+                                            }`}
                                     >
                                         <input
                                             type="checkbox"
                                             name="vehicleCategory"
-                                            value={item.val}
+                                            value={val}
                                             checked={isChecked}
                                             onChange={handleVehicleCategoryChange}
                                             className="rounded text-green-600 focus:ring-green-500 w-4 h-4 transition-all"
                                         />
-                                        <span className="text-lg">{item.icon}</span>
-                                        <span className="text-sm font-medium">{item.label}</span>
+                                        <span className="text-lg">{getVehicleIcon(val)}</span>
+                                        <span className="text-sm font-medium">{val}</span>
                                     </label>
                                 );
                             })}

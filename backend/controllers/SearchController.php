@@ -1,5 +1,5 @@
 <?php
-require_once '../config/JwtHandler.php';
+require_once __DIR__ . '/../config/JwtHandler.php';
 
 class SearchController {
     private $shopModel;
@@ -10,6 +10,7 @@ class SearchController {
     }
 
     public function handleSearchRequest($requestData) {
+        RequestValidator::enforceMethod('GET');
         $lat = isset($requestData['lat']) ? (float) $requestData['lat'] : null;
         $lng = isset($requestData['lng']) ? (float) $requestData['lng'] : null;
         $needs_tow = isset($requestData['needs_tow']) ? $requestData['needs_tow'] : 'false';
@@ -43,7 +44,7 @@ class SearchController {
                 $openStatusText = "Temporarily Closed";
 
                 if ($row['isAvailable'] == 1) {
-                    if ($currentTime >= $row['openTime'] && $currentTime <= $row['closeTime']) {
+                    if ($currentTime >= $row['openTime'] && $currentTime < $row['closeTime']) {
                         $isOpen = true;
                         $openStatusText = "Open Now";
                     } else {

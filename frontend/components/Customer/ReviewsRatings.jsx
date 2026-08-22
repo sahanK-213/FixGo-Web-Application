@@ -37,7 +37,7 @@ function ReviewsRatings() {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const data = await api.get("getCustomerReviews.php");
+                const data = await api.get("customer/getCustomerReviews.php");
                 if (data.success) setReviews(data.data || []);
             } catch (err) {
                 console.error("Fetch reviews error:", err);

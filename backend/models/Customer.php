@@ -1,40 +1,36 @@
 <?php
 
 class Customer {
-    private $conn;
+    private $qb;
 
-    public function __construct($db) {
-        $this->conn = $db;
+    public function __construct($db, $queryBuilder = null) {
+        $this->qb = $queryBuilder ?: new QueryBuilder($db);
     }
 
     public function getById($customerId) {
-        $stmt = $this->conn->prepare("
-            SELECT 
-                c.id,
-                c.name,
-                c.contactNumber,
-                c.address,
-                c.profilePhoto,
-                c.createdAt,
-                u.email
-            FROM customer c
-            JOIN users u ON c.id = u.id
-            WHERE c.id = :id
-            LIMIT 1
-        ");
-        
-        $stmt->bindParam(':id', $customerId, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $this->qb->table('customer', 'c')
+            ->select([
+                'c.id',
+                'c.name',
+                'c.contactNumber',
+                'c.address',
+                'c.profilePhoto',
+                'c.createdAt',
+                'u.email'
+            ])
+            ->join('users u', 'c.id', '=', 'u.id')
+            ->where('c.id', $customerId)
+            ->first();
     }
 
     // Adds a penalty strike if a customer cancels a Confirmed handshake
     public function incrementCancellationStrikes($customer_id) {
-        $query = "UPDATE customer SET cancellation_strikes = cancellation_strikes + 1 WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $customer_id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $this->qb->table('customer')
+            ->where('id', $customer_id)
+            ->update([
+                'cancellation_strikes' => QueryBuilder::raw('cancellation_strikes + 1')
+            ]);
+        return true;
     }
 
     /**
@@ -48,93 +44,118 @@ class Customer {
      */
     public function register($userData, $customerData) {
         try {
-            $this->conn->beginTransaction();
+            $this->qb->beginTransaction();
 
             // 1. Insert into users
-            $userQuery = "INSERT INTO users (email, userRole, password, isActive, verification_token, is_email_verified, token_expiry) 
-                          VALUES (:email, 'customer', :password, 0, :token, 0, DATE_ADD(NOW(), INTERVAL 1 HOUR))";
-            $userStmt = $this->conn->prepare($userQuery);
-            $userStmt->execute([
-                ':email' => $userData['email'],
-                ':password' => $userData['password'],
-                ':token' => $userData['verification_token']
+            $userId = $this->qb->table('users')->insertGetId([
+                'email' => $userData['email'],
+                'userRole' => 'customer',
+                'password' => $userData['password'],
+                'isActive' => 0,
+                'verification_token' => $userData['verification_token'],
+                'is_email_verified' => 0,
+                'token_expiry' => date('Y-m-d H:i:s', time() + (5 * 60))
             ]);
-            
-            $userId = $this->conn->lastInsertId();
 
             // 2. Insert into customer
-            $customerQuery = "INSERT INTO customer (id, name, contactNumber, address, profilePhoto) 
-                              VALUES (:id, :name, :contactNumber, :address, :profilePhoto)";
-            
-            $customerStmt = $this->conn->prepare($customerQuery);
-            $customerStmt->execute([
-                ':id' => $userId,
-                ':name' => $customerData['name'],
-                ':contactNumber' => $customerData['contactNumber'],
-                ':address' => $customerData['address'],
-                ':profilePhoto' => $customerData['profilePhoto']
+            $this->qb->table('customer')->insert([
+                'id' => $userId,
+                'name' => $customerData['name'],
+                'contactNumber' => $customerData['contactNumber'],
+                'address' => $customerData['address'],
+                'profilePhoto' => $customerData['profilePhoto']
             ]);
 
-            $this->conn->commit();
+            $this->qb->commit();
             return $userId;
         } catch (Exception $e) {
-            if ($this->conn->inTransaction()) {
-                $this->conn->rollBack();
+            if ($this->qb->inTransaction()) {
+                $this->qb->rollBack();
             }
             throw $e;
         }
     }
 
     /**
+     * Re-registers an unverified customer, updating their user and customer details with a fresh 5-minute OTP.
+     */
+    public function reRegister($userId, $userData, $customerData) {
+        try {
+            $this->qb->beginTransaction();
+
+            $this->qb->table('users')->where('id', $userId)->update([
+                'userRole' => 'customer',
+                'password' => $userData['password'],
+                'isActive' => 0,
+                'verification_token' => $userData['verification_token'],
+                'is_email_verified' => 0,
+                'token_expiry' => date('Y-m-d H:i:s', time() + (5 * 60))
+            ]);
+
+            $existing = $this->qb->table('customer')->where('id', $userId)->first();
+            $customerPayload = [
+                'name' => $customerData['name'],
+                'contactNumber' => $customerData['contactNumber'],
+                'address' => $customerData['address']
+            ];
+            if (!empty($customerData['profilePhoto'])) {
+                $customerPayload['profilePhoto'] = $customerData['profilePhoto'];
+            }
+
+            if ($existing) {
+                $this->qb->table('customer')->where('id', $userId)->update($customerPayload);
+            } else {
+                $customerPayload['id'] = $userId;
+                $this->qb->table('customer')->insert($customerPayload);
+            }
+
+            $this->qb->commit();
+            return $userId;
+        } catch (Exception $e) {
+            if ($this->qb->inTransaction()) {
+                $this->qb->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+
+    /**
      * Updates customer profile details and optionally user password.
      */
     public function updateProfile($customerId, $data, $newPassword = null) {
         try {
-            $this->conn->beginTransaction();
+            $this->qb->beginTransaction();
 
-            $fields = [];
-            $params = [':id' => $customerId];
+            $updateData = [];
+            if (array_key_exists('name', $data)) $updateData['name'] = $data['name'];
+            if (array_key_exists('contactNumber', $data)) $updateData['contactNumber'] = $data['contactNumber'];
+            if (array_key_exists('address', $data)) $updateData['address'] = $data['address'];
+            if (array_key_exists('profilePhoto', $data)) $updateData['profilePhoto'] = $data['profilePhoto'];
 
-            if (array_key_exists('name', $data)) {
-                $fields[] = "name = :name";
-                $params[':name'] = $data['name'];
-            }
-            if (array_key_exists('contactNumber', $data)) {
-                $fields[] = "contactNumber = :contactNumber";
-                $params[':contactNumber'] = $data['contactNumber'];
-            }
-            if (array_key_exists('address', $data)) {
-                $fields[] = "address = :address";
-                $params[':address'] = $data['address'];
-            }
-            if (array_key_exists('profilePhoto', $data)) {
-                $fields[] = "profilePhoto = :profilePhoto";
-                $params[':profilePhoto'] = $data['profilePhoto'];
-            }
-
-            if (!empty($fields)) {
-                $sql = "UPDATE customer SET " . implode(', ', $fields) . " WHERE id = :id";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->execute($params);
+            if (!empty($updateData)) {
+                $this->qb->table('customer')->where('id', $customerId)->update($updateData);
             }
 
             if (!empty($newPassword)) {
                 $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-                $userSql = "UPDATE users SET password = :password WHERE id = :id";
-                $userStmt = $this->conn->prepare($userSql);
-                $userStmt->execute([
-                    ':password' => $passwordHash,
-                    ':id' => $customerId
+                $this->qb->table('users')->where('id', $customerId)->update([
+                    'password' => $passwordHash
                 ]);
             }
 
-            $this->conn->commit();
+            $this->qb->commit();
             return true;
         } catch (Exception $e) {
-            if ($this->conn->inTransaction()) {
-                $this->conn->rollBack();
+            if ($this->qb->inTransaction()) {
+                $this->qb->rollBack();
             }
             throw $e;
         }
+    }
+
+    public function getProfilePhoto($customerId) {
+        $row = $this->qb->table('customer')->where('id', $customerId)->select('profilePhoto')->first();
+        return $row ? $row['profilePhoto'] : null;
     }
 }

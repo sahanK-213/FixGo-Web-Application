@@ -92,7 +92,7 @@ function ActiveRepairs() {
   const [updatingId, setUpdatingId] = useState(null);
 
   useEffect(() => {
-    api.get("getActiveRepairs.php")
+    api.get("shop/getActiveRepairs.php")
       .then((data) => {
         if (data.success) {
           setActiveRepairs(data.data);
@@ -107,7 +107,7 @@ function ActiveRepairs() {
     setUpdatingId(requestId);
 
     try {
-      const data = await api.post("updateStatus.php", {
+      const data = await api.post("shared/updateStatus.php", {
         request_id: requestId,
         new_status: nextStatus,
       });
@@ -121,6 +121,7 @@ function ActiveRepairs() {
           )
         );
       }
+      window.dispatchEvent(new Event("fixgo_unread_changed"));
     } catch (err) {
       console.error(err);
       alert("Something went wrong while updating the status.");
@@ -138,17 +139,6 @@ function ActiveRepairs() {
         <p className="text-gray-500 mt-1 text-sm">
           Track all ongoing repair jobs.
         </p>
-      </div>
-
-      <div className="flex gap-3 mb-6">
-        <input
-          placeholder="Search customer, vehicle, or repair..."
-          className="flex-1 px-5 py-3.5 rounded-2xl border border-gray-200 bg-white text-[15px] outline-none"
-        />
-
-        <button className="bg-green-600 text-white border-none rounded-2xl px-6 font-semibold cursor-pointer">
-          Filter
-        </button>
       </div>
 
       <div className="bg-white rounded-[18px] border border-[#E7EFE8] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.05)]">

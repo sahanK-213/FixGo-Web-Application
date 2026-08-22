@@ -34,7 +34,7 @@ export default function ReviewModal({ isOpen, onClose, serviceRequestId, shopId,
         setSubmitting(true);
         setError("");
         try {
-            const data = await api.post("submitReview.php", {
+            const data = await api.post("customer/submitReview.php", {
                 service_request_id: serviceRequestId,
                 shop_id: shopId,
                 rating,

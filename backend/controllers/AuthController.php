@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../models/userRole.php';
+require_once __DIR__ . '/../models/Shop.php';
+require_once __DIR__ . '/../models/Customer.php';
 require_once __DIR__ . '/../config/JwtHandler.php';
 
 
@@ -16,10 +18,11 @@ class AuthController{
 
     public function login(){
 
-        $rawInput = file_get_contents("php://input");
-        $data = json_decode($rawInput);
+        RequestValidator::enforceMethod('POST');
+
+        $data = RequestValidator::getJsonPayload(false);
         
-        if(!is_object($data) || empty($data->email) || empty($data->password)){
+        if(empty($data->email) || empty($data->password)){
             http_response_code(400);
             echo json_encode(["message"=>"Email and password are required."]);
             return;
@@ -47,7 +50,11 @@ class AuthController{
             if(!$user->isActive){
 
                 http_response_code(403);
-                echo json_encode(["message"=>"Account is inactive. Please contact support."]);
+                if ($user->userRole === 'shop_owner') {
+                    echo json_encode(["message"=>"Your account is pending admin approval."]);
+                } else {
+                    echo json_encode(["message"=>"Account is inactive. Please contact support."]);
+                }
                 return;
             }
 
@@ -75,17 +82,11 @@ class AuthController{
                 // Fetch profile image URL
                 $profileImage = null;
                 if ($user->userRole === 'shop_owner') {
-                    $stmt = $this->db->prepare("SELECT profileImageURL FROM shop WHERE id = :id LIMIT 1");
-                    $stmt->execute([':id' => $user->id]);
-                    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        $profileImage = $row['profileImageURL'];
-                    }
+                    $shopModel = new Shop($this->db);
+                    $profileImage = $shopModel->getProfileImageURL($user->id);
                 } else if ($user->userRole === 'customer') {
-                    $stmt = $this->db->prepare("SELECT profilePhoto FROM customer WHERE id = :id LIMIT 1");
-                    $stmt->execute([':id' => $user->id]);
-                    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        $profileImage = $row['profilePhoto'];
-                    }
+                    $customerModel = new Customer($this->db);
+                    $profileImage = $customerModel->getProfilePhoto($user->id);
                 }
 
                 http_response_code(200);
@@ -198,16 +199,12 @@ class AuthController{
 
     public function verifyEmail() {
         // Only handle POST and GET requests
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $_SERVER['REQUEST_METHOD'] !== 'GET') {
-            http_response_code(405);
-            echo json_encode(["message" => "Method not allowed."]);
-            return;
-        }
+        RequestValidator::enforceMethod(['POST', 'GET']);
 
         // Retrieve token
         $token = null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = json_decode(file_get_contents("php://input"));
+            $data = RequestValidator::getJsonPayload(false);
             $token = isset($data->token) ? trim($data->token) : null;
         } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $token = isset($_GET['token']) ? trim($_GET['token']) : null;
@@ -237,7 +234,11 @@ class AuthController{
             $user->verifyEmail($user->id);
 
             http_response_code(200);
-            echo json_encode(["message" => "Email verified successfully. You can now log in to your account."]);
+            if ($user->userRole === 'shop_owner') {
+                echo json_encode(["message" => "Email verified successfully. Your account is pending admin approval."]);
+            } else {
+                echo json_encode(["message" => "Email verified successfully. You can now log in to your account."]);
+            }
             return;
     
         } catch (Exception $e) {
@@ -248,14 +249,9 @@ class AuthController{
     }
 
     public function forgotPassword() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(["message" => "Method not allowed."]);
-            return;
-        }
+        RequestValidator::enforceMethod('POST');
 
-        $rawInput = file_get_contents("php://input");
-        $data = json_decode($rawInput);
+        $data = RequestValidator::getJsonPayload(false);
         $email = isset($data->email) ? trim($data->email) : '';
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -290,14 +286,9 @@ class AuthController{
     }
 
     public function verifyResetOtp() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(["message" => "Method not allowed."]);
-            return;
-        }
+        RequestValidator::enforceMethod('POST');
 
-        $rawInput = file_get_contents("php://input");
-        $data = json_decode($rawInput);
+        $data = RequestValidator::getJsonPayload(false);
         $otp = isset($data->otp) ? trim($data->otp) : '';
 
         if (empty($otp)) {
@@ -324,14 +315,9 @@ class AuthController{
     }
 
     public function resetPassword() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(["message" => "Method not allowed."]);
-            return;
-        }
+        RequestValidator::enforceMethod('POST');
 
-        $rawInput = file_get_contents("php://input");
-        $data = json_decode($rawInput);
+        $data = RequestValidator::getJsonPayload(false);
         $otp = isset($data->otp) ? trim($data->otp) : '';
         $newPassword = isset($data->password) ? $data->password : '';
 
@@ -341,9 +327,9 @@ class AuthController{
             return;
         }
 
-        if (strlen($newPassword) < 6) {
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $newPassword)) {
             http_response_code(400);
-            echo json_encode(["message" => "Password must be at least 6 characters long."]);
+            echo json_encode(["message" => "Password must be at least 8 characters long and include an uppercase letter, lowercase letter, and a number."]);
             return;
         }
 
@@ -368,6 +354,42 @@ class AuthController{
             http_response_code(500);
             echo json_encode(["message" => "Failed to update password. Please try again."]);
         }
+    }
+
+    public function resendOtp() {
+        RequestValidator::enforceMethod('POST');
+
+        $data = RequestValidator::getJsonPayload(false);
+        $email = isset($data->email) ? trim($data->email) : '';
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            echo json_encode(["message" => "A valid email address is required."]);
+            return;
+        }
+
+        $user = new User($this->db);
+        if (!$user->findByEmail($email)) {
+            // Don't reveal whether the email exists — generic message
+            http_response_code(200);
+            echo json_encode(["message" => "If that email is registered and unverified, a new OTP has been sent."]);
+            return;
+        }
+
+        if ($user->is_email_verified) {
+            http_response_code(400);
+            echo json_encode(["message" => "This account is already verified. Please log in."]);
+            return;
+        }
+
+        $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $user->refreshVerificationToken($email, $otp);
+
+        require_once __DIR__ . '/../config/EmailSender.php';
+        EmailSender::sendVerificationEmail($email, $otp);
+
+        http_response_code(200);
+        echo json_encode(["message" => "A new OTP has been sent to your email. It expires in 5 minutes."]);
     }
 
 }

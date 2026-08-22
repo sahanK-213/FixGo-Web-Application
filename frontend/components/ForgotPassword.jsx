@@ -16,7 +16,7 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            const data = await api.postPublic('forgotPassword.php', { email });
+            const data = await api.postPublic('auth/forgotPassword.php', { email });
             setSuccess(true);
             setMessage(data.message || 'OTP sent successfully!');
             setTimeout(() => {

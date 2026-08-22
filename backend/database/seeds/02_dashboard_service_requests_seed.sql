@@ -1,0 +1,22 @@
+-- Seed File for Dashboard Service Requests
+INSERT INTO servicerequest (customer_id, shop_id, vehicle_category_id, status, urgency_level, location, created_at, completed_at, cancelled_at) VALUES
+(12, 8, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2025-08-24 16:41', '2025-08-24 20:13:57', NULL),
+(13, 8, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2025-09-07 08:37', '2025-09-07 12:12:19', NULL),
+(12, 6, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2025-10-03 12:25', '2025-10-03 14:42:35', NULL),
+(12, 4, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2025-11-20 11:20', '2025-11-20 14:42:34', NULL),
+(12, 2, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2025-12-15 17:18', '2025-12-15 18:20:50', NULL),
+(13, 2, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2025-12-26 16:18', '2025-12-26 17:43:35', NULL),
+(12, 9, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-01-07 16:32', '2026-01-07 18:46:32', NULL),
+(12, 9, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-02-27 16:48', '2026-02-27 18:38:53', NULL),
+(12, 3, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-03-27 09:31', '2026-03-27 12:32:35', NULL),
+(11, 10, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-03-23 11:59', '2026-03-23 14:39:05', NULL),
+(11, 8, 1, 'Cancelled', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-04-02 11:14', NULL, '2026-04-02 11:55:50'),
+(11, 2, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-04-19 11:00', '2026-04-19 12:46:15', NULL),
+(11, 8, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-05-08 14:49', '2026-05-08 15:53:03', NULL),
+(12, 8, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-05-26 11:34', '2026-05-26 12:36:03', NULL),
+(13, 9, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-05-19 11:52', '2026-05-19 14:28:32', NULL),
+(12, 1, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-06-25 16:57', '2026-06-25 19:25:48', NULL),
+(13, 1, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-06-14 11:19', '2026-06-14 14:54:42', NULL),
+(11, 7, 1, 'Cancelled', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-06-04 18:46', NULL, '2026-06-04 19:21:09'),
+(11, 6, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-06-07 08:49', '2026-06-07 12:25:08', NULL),
+(13, 6, 1, 'Completed', 'Normal', ST_GeomFromText('POINT(79.8612 6.9271)'), '2026-07-12 14:39', '2026-07-12 16:25:12', NULL);

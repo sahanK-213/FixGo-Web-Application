@@ -3,7 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faSearch,
     faLocationDot,
-    faLocationCrosshairs
+    faLocationCrosshairs,
+    faCar,
+    faWarehouse
 } from "@fortawesome/free-solid-svg-icons";
 
 export const ShopFilterBar = ({
@@ -136,15 +138,18 @@ export const ShopFilterBar = ({
                 {/* VEHICLE TYPE BLOCK */}
                 <div className="flex flex-col flex-1 px-4 py-2 border-b md:border-b-0 border-gray-100">
                     <label className="text-[10px] font-bold text-gray-500 mb-1">Vehicle Type</label>
-                    <select
-                        value={localVehicle}
-                        onChange={(e) => setLocalVehicle(e.target.value)}
-                        // CHANGED: Added bg-gray-50 and border for clear visibility
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 font-bold text-gray-900 outline-none cursor-pointer text-sm focus:border-[#16a34a] focus:bg-white transition-colors"
-                    >
-                        <option value="">🚗 All Vehicles</option>
-                        {vehicleOptions.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
-                    </select>
+                    <div className="relative">
+                        <FontAwesomeIcon icon={faCar} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        <select
+                            value={localVehicle}
+                            onChange={(e) => setLocalVehicle(e.target.value)}
+                            // CHANGED: Added bg-gray-50 and border for clear visibility
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-3 py-2 font-bold text-gray-900 outline-none cursor-pointer text-sm focus:border-[#16a34a] focus:bg-white transition-colors appearance-none"
+                        >
+                            <option value="">All Vehicles</option>
+                            {vehicleOptions.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
+                        </select>
+                    </div>
                 </div>
 
                 {/* SERVICE TYPE BLOCK */}
@@ -168,17 +173,20 @@ export const ShopFilterBar = ({
                         )}
                     </div>
 
-                    <select
-                        value={localService}
-                        onChange={(e) => {
-                            setLocalService(e.target.value);
-                            if (e.target.value !== "1") setLocalNeedsTow(false);
-                        }}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 font-bold text-gray-900 outline-none cursor-pointer text-sm focus:border-[#16a34a] focus:bg-white transition-colors"
-                    >
-                        <option value="">🔧 All Services</option>
-                        {serviceOptions.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
-                    </select>
+                    <div className="relative">
+                        <FontAwesomeIcon icon={faWarehouse} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        <select
+                            value={localService}
+                            onChange={(e) => {
+                                setLocalService(e.target.value);
+                                if (e.target.value !== "1") setLocalNeedsTow(false);
+                            }}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-10 pr-3 py-2 font-bold text-gray-900 outline-none cursor-pointer text-sm focus:border-[#16a34a] focus:bg-white transition-colors appearance-none"
+                        >
+                            <option value="">All Services</option>
+                            {serviceOptions.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
+                        </select>
+                    </div>
                 </div>
 
                 {/* LOCATION BLOCK */}
@@ -207,7 +215,7 @@ export const ShopFilterBar = ({
                             }}
                             placeholder="City or Area..."
                             // CHANGED: Added bg-gray-50 and border
-                            className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none font-bold text-sm text-gray-900 truncate focus:border-[#16a34a] focus:bg-white transition-colors"
+                            className="w-full pl-10 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none font-bold text-sm text-gray-900 truncate focus:border-[#16a34a] focus:bg-white transition-colors"
                         />
                     </div>
                     

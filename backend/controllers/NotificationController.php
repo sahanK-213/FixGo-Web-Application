@@ -9,15 +9,12 @@ class NotificationController {
         $this->notification = new Notification($db);
     }
 
-    public function getAll() {
-        $payload = AuthMiddleware::authenticate();
+    public function getAll($payload) {
+        RequestValidator::enforceMethod('GET');
+
         $userId  = $payload['user_id'] ?? null;
 
-        if (!$userId) {
-            http_response_code(401);
-            echo json_encode(["success" => false, "message" => "Unauthorized."]);
-            return;
-        }
+
 
         try {
             $notifications = $this->notification->getByUser($userId);
@@ -33,22 +30,12 @@ class NotificationController {
         }
     }
 
-    public function markRead() {
-        $payload = AuthMiddleware::authenticate();
-        $userId  = $payload['user_id'] ?? null;
+    public function markRead(array $payload) {
+        RequestValidator::enforceMethod('POST');
 
-        if (!$userId) {
-            http_response_code(401);
-            echo json_encode(["success" => false, "message" => "Unauthorized."]);
-            return;
-        }
+        $userId = (int)$payload['user_id'];
 
-        $rawData = json_decode(file_get_contents("php://input"), true);
-        if ($rawData === null) {
-            http_response_code(400);
-            echo json_encode(["message" => "Invalid or missing JSON payload."]);
-            return;
-        }
+        $rawData = RequestValidator::getJsonPayload();
 
         try {
             if (!empty($rawData['notification_id'])) {

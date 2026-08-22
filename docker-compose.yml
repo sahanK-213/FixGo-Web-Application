@@ -1,0 +1,120 @@
+services:
+  database:
+    # 1. The Blueprint (Image)
+    # We are telling Docker to download the official MySQL 8.0 image from the internet.
+    image: mysql:8.0
+    
+    # Enable Windows-style case-insensitivity for table names to support legacy XAMPP code
+    command: --lower_case_table_names=1
+    
+    # 2. Port Mapping
+    # format is "HostPort:ContainerPort". 
+    # We map your computer's 3306 to the container's 3306 so your PHP app can talk to it.
+    ports:
+      - "3306:3306"
+      
+    # 3. Environment Variables
+    # We pass the root password and default database name directly into the container.
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fixgo_db
+      
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+      
+    # 4. Volumes (Data Persistence)
+    # If the container is deleted, the data inside it is deleted. 
+    # We map a folder inside the container to a folder on your hard drive (mysql_data) so data survives!
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      database:
+        condition: service_healthy
+
+  backend:
+    # Instead of pulling a pre-made image from the internet, 
+    # this tells Docker to BUILD the image using the Dockerfile we just created in the backend folder!
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      
+    # Map your laptop's port 8000 to the container's port 8000
+    ports:
+      - "8000:8000"
+      
+    # The magical mirror! This links your real backend folder to the container's /var/www/html folder.
+    volumes:
+      - ./backend:/var/www/html
+      
+    # We pass the database connection details as environment variables.
+    # NOTICE: DB_HOST is 'database', exactly matching the service name above!
+    environment:
+      - DB_HOST=database
+      - DB_PORT=3306
+      - DB_NAME=fixgo_db
+      - DB_USER=root
+      - DB_PASS=root
+      
+    # Tell Docker not to start the PHP container until the Database is ready to accept connections!
+    depends_on:
+      database:
+        condition: service_healthy
+      
+    # This is the answer to your question! When the container starts, it automatically:
+    # 1. Installs composer packages
+    # 2. Runs your custom migration script
+    # 3. Runs your custom seed script
+    # 4. Starts the PHP server
+    command: >
+      bash -c "composer install
+      && php database/migrate.php
+      && php database/seed.php
+      && php -S 0.0.0.0:8000 -t ."
+
+  frontend:
+    # 1. The Blueprint
+    # Notice we don't need a custom Dockerfile here! The official Node image is perfect out of the box.
+    image: node:20-alpine
+    
+    # Set the working directory inside the container
+    working_dir: /app
+    
+    # 2. Port Mapping
+    # Map Vite's default port to your laptop
+    ports:
+      - "5173:5173"
+      
+    # Map your real frontend folder into the container so hot-reloading works when you edit React files!
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+      
+    # 4. Environment Variables
+    environment:
+      # This forces Vite to watch for file changes inside the Docker container
+      - CHOKIDAR_USEPOLLING=true
+      
+    # 5. The Command
+    # We automatically install NPM packages and start the Vite server.
+    # We MUST pass "--host" so Vite exposes the server outside the container's bubble to your laptop!
+    command: >
+      sh -c "npm install 
+      && npm run dev -- --host"
+
+# We declare the volume here so Docker knows to create a permanent storage space for it.
+volumes:
+  mysql_data:
