@@ -145,7 +145,7 @@ function DashboardView({
     {
       label: "Completed Jobs",
       value: completedJobCount,
-      sub: "+6 this week",
+      sub: "View history",
       subColor: "text-green-600",
       icon: faCircleCheck,
       target: "history",
@@ -154,7 +154,7 @@ function DashboardView({
       label: "Average Rating",
       value: reviewCount > 0 ? Number(averageRating).toFixed(1) : "0.0",
       sub: `(${reviewCount} ${reviewCount === 1 ? "review" : "reviews"})`,
-      subColor: "text-gray-500",
+      subColor: "text-green-600",
       icon: faStar,
       target: "reviews",
     },
@@ -168,24 +168,26 @@ function DashboardView({
 
   return (
     <div className="w-full block">
-      <div className="bg-gradient-to-b from-[#EEF7F0] to-white rounded-[18px] p-6 mb-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-        <div className="flex justify-between items-center mb-1">
+      <div
+        className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"
+        style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+      >
+        <div>
           <h1 className="text-[28px] font-bold text-gray-900 m-0">
             Hello, {shopData?.name || "Shop"}! 👋
           </h1>
-
-          <span className="text-sm font-semibold text-gray-700 bg-white py-2.5 px-4 rounded-xl border border-gray-200">
-            {currentDate}
-          </span>
+          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+            Here's what's happening at your shop today.
+          </p>
         </div>
 
-        <p className="text-gray-500 mt-2 mb-0 text-[15px]">
-          Here's what's happening at your shop today.
-        </p>
+        <span className="text-sm font-semibold text-gray-700 bg-white py-2.5 px-4 rounded-xl border border-gray-200 self-start sm:self-auto">
+          {currentDate}
+        </span>
       </div>
 
-      {/* Stat Cards Layout - Using custom grids designed to dynamically span your monitor size */}
-      <div className="grid gap-5 mb-8 w-full [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+      {/* Stat Cards Layout - Responsive grid for mobile, tablet & desktop */}
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 md:mb-8 w-full">
         {stats.map((s) => (
           <div
             key={s.label}
@@ -198,20 +200,20 @@ function DashboardView({
                 if (setActiveNav) setActiveNav(s.target);
               }
             }}
-            className="bg-white rounded-[18px] border border-[#E7EFE8] py-5 px-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-[250ms] ease-in-out cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_10px_24px_rgba(0,0,0,0.08)]"
+            className="bg-white rounded-[18px] border border-[#E7EFE8] py-4 px-5 sm:py-5 sm:px-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-[250ms] ease-in-out cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_10px_24px_rgba(0,0,0,0.08)]"
           >
             <div className="text-2xl mb-2 text-green-600">
               <FontAwesomeIcon icon={s.icon} />
             </div>
             <div className="text-gray-500 text-[13px] mb-1">{s.label}</div>
-            <div className="text-[32px] font-bold text-gray-900 leading-none">{s.value}</div>
+            <div className="text-[28px] sm:text-[32px] font-bold text-gray-900 leading-none">{s.value}</div>
             <div className={`text-[13px] mt-1.5 ${s.subColor}`}>{s.sub}</div>
           </div>
         ))}
       </div>
 
       {/* Service Request Volume Line Chart */}
-      <div className="bg-white rounded-[18px] border border-[#E7EFE8] p-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)] w-full flex flex-col min-h-[350px]">
+      <div className="bg-white rounded-[18px] border border-[#E7EFE8] p-4 sm:p-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)] w-full flex flex-col min-h-[350px]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
           <div>
             <h3 className="text-base font-bold text-gray-900 m-0">Service Request Volume</h3>
@@ -276,6 +278,7 @@ function renderPage(
   reviewCount,
   setActiveNav,
   fetchRequestCount,
+  fetchActiveRepairCount,
   selectedNotifId,
   onClearSelection
 ) {
@@ -300,7 +303,7 @@ function renderPage(
   }}
   fetchRequestCount={fetchRequestCount}
 />;
-    case "repairs":       return <ActiveRepairs />;
+    case "repairs":       return <ActiveRepairs fetchActiveRepairCount={fetchActiveRepairCount} />;
     case "history":       return <ServiceHistory />;
     case "reviews":       return <ReviewsRatings />;
     case "profile":       return <ShopProfile />;
@@ -339,11 +342,37 @@ function ShopOwnerDashboard() {
   const [shopData, setShopData] = useState(null);
   const [requestCount, setRequestCount] = useState(0);
   const [activeRepairCount, setActiveRepairCount] = useState(0);
+  const [unviewedActiveRepairCount, setUnviewedActiveRepairCount] = useState(0);
   const [completedJobCount, setCompletedJobCount] = useState(0); 
   const [notificationCount, setNotificationCount] = useState(0);
   const [billingCount, setBillingCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
+
+  const fetchActiveRepairCount = () => {
+    api.get("shop/getActiveRepairs.php")
+      .then((data) => {
+        if (data.success && Array.isArray(data.data)) {
+          const activeRepairs = data.data.filter(
+            (repair) =>
+              repair.status === "Confirmed" ||
+              repair.status === "In Progress"
+          );
+          setActiveRepairCount(activeRepairs.length);
+
+          const viewedIds = JSON.parse(localStorage.getItem("fixgo_viewed_repairs") || "[]");
+          const unviewedCount = activeRepairs.filter(
+            (r) => !viewedIds.includes(String(r.id))
+          ).length;
+          setUnviewedActiveRepairCount(unviewedCount);
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    fetchActiveRepairCount();
+  }, []);
 
   useEffect(() => {
     if (location.state?.targetPage) {
@@ -490,6 +519,7 @@ useEffect(() => {
         shopData={shopData}
         requestCount={requestCount}
         activeRepairCount={activeRepairCount}
+        activeRepairBadgeCount={unviewedActiveRepairCount}
         notificationCount={notificationCount}
         reviewCount={reviewCount}
         billingCount={billingCount}
@@ -523,6 +553,7 @@ useEffect(() => {
             reviewCount,
             setActiveNav,
             fetchRequestCount,
+            fetchActiveRepairCount,
             selectedNotifId,
             () => setSelectedNotifId(null)
           )}

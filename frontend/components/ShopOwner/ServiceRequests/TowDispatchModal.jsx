@@ -37,8 +37,8 @@ function TowDispatchModal({
   if (!showTowModal || !towTruck) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/55 flex justify-center items-center z-[1000] p-5">
-      <div className="bg-white w-[480px] max-w-full rounded-2xl overflow-hidden shadow-[0_24px_48px_rgba(15,23,42,0.25)]">
+    <div className="fixed inset-0 bg-slate-900/55 flex justify-center items-center z-[1000] p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white w-[480px] max-w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto rounded-2xl shadow-[0_24px_48px_rgba(15,23,42,0.25)]">
         {/* Header */}
         <div className="py-5 px-7 border-b border-[#E5E9F0] flex items-center gap-3">
           <div className="w-[38px] h-[38px] rounded-[10px] bg-blue-100 flex items-center justify-center text-lg shrink-0 text-blue-600">

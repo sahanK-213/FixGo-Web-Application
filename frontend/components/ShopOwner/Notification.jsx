@@ -202,14 +202,21 @@ export default function Notification({ setActiveNav, initialSelectedId, onClearS
     return (
         <div className="flex flex-col gap-6" style={{ fontFamily: FONT }}>
             {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900 m-0">Notifications</h1>
-                <p className="text-xs text-gray-500 mt-1">Stay updated with customer service requests and repair status updates.</p>
+            <div
+                className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4"
+                style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+            >
+                <div>
+                    <h1 className="text-[28px] font-bold text-gray-900 m-0">Notifications</h1>
+                    <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+                        Stay updated with customer service requests and repair status updates.
+                    </p>
+                </div>
             </div>
 
             {/* Filter Tabs & Mark All */}
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     {TABS.map((tab) => {
                         const active = activeTab === tab.key;
                         const count = tabCount(tab.key);
@@ -217,7 +224,7 @@ export default function Notification({ setActiveNav, initialSelectedId, onClearS
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`rounded-full py-1.5 px-4 text-xs font-semibold cursor-pointer transition-all duration-150 border-none ${active
+                                className={`rounded-full py-1.5 px-3 sm:px-4 text-xs font-semibold cursor-pointer transition-all duration-150 border-none ${active
                                     ? "bg-green-600 text-white shadow-sm"
                                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                     }`}

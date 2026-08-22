@@ -33,78 +33,41 @@ class ShopController {
         ]);
     }
 
-    // --- OUR NEW METHOD FOR THE SHOP DETAILS PAGE ---
+    // Public shop details page — no AuthMiddleware gate.
+    // Optionally identifies the calling customer from a Bearer token so the
+    // model can attach personalised state (e.g. wishlist). Non-customers and
+    // unauthenticated visitors receive $customerId = null with no error.
     public function getDetails() {
-        // 1. Only accept GET requests
         RequestValidator::enforceMethod('GET');
 
-        // 2. Validate that the ID exists in the URL
         if (!isset($_GET['id']) || empty($_GET['id'])) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Shop ID is required']);
             return;
         }
 
-        $shopId = intval($_GET['id']);
-        
-        // 3. SECURE JWT AUTHENTICATION CHECK
+        // Resolve optional customer identity from Bearer token (if present)
         $customerId = null;
-        
-        // Get headers (works across different server environments like Apache/Nginx)
-        $headers = null;
-        if (isset($_SERVER['Authorization'])) {
-            $headers = trim($_SERVER["Authorization"]);
-        } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-            $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
-        } elseif (function_exists('apache_request_headers')) {
-            $requestHeaders = apache_request_headers();
-            $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-            if (isset($requestHeaders['Authorization'])) {
-                $headers = trim($requestHeaders['Authorization']);
-            }
-        }
-
-        // Extract and cryptographically verify the token
-        if (!empty($headers)) {
-            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-                $jwt = $matches[1];
-                
-                // IMPORTANT: Adjust this path to where your JwtHandler.php is located if needed
-                require_once __DIR__ . '/../config/JwtHandler.php'; 
-                
-                $jwtHandler = new JwtHandler();
-                $payload = $jwtHandler->decode($jwt);
-                
-                // If decode() returns an array (not false), the signature is valid and it hasn't expired!
-                if ($payload !== false) {
-                    
-                    // THE FIX: Check for 'role' first, fallback to 'userRole' just in case
-                    $role = $payload['role'] ?? $payload['userRole'] ?? '';
-                    
-                    // Check if the user is specifically a customer
-                    if ($role === 'customer') {
-                        // Extract the user ID safely using null coalescing
-                        $extractedId = $payload['user_id'] ?? $payload['id'] ?? null;
-                        if ($extractedId) {
-                            $customerId = intval($extractedId); 
-                        }
-                    }
+        $authHeader = getallheaders()['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (preg_match('/Bearer\s(\S+)/', $authHeader, $m)) {
+            $decoded = (new JwtHandler())->decode($m[1]);
+            if ($decoded !== false && ($decoded['role'] ?? $decoded['userRole'] ?? '') === 'customer') {
+                $rawId = $decoded['user_id'] ?? $decoded['id'] ?? null;
+                if ($rawId) {
+                    $customerId = intval($rawId);
                 }
             }
         }
 
-        // 4. Instantiate the model using your existing DB connection
+        $shopId   = intval($_GET['id']);
         $shopModel = new Shop($this->db);
+        $shopData  = $shopModel->getShopDetails($shopId, $customerId);
 
-        // 5. Pass BOTH the shopId and the extracted customerId to the model
-        $shopData = $shopModel->getShopDetails($shopId, $customerId);
-
-        // 5. Return the JSON payload
         if ($shopData) {
             http_response_code(200);
             echo json_encode([
                 'success' => true,
-                'data' => $shopData
+                'data'    => $shopData
             ]);
         } else {
             http_response_code(404);

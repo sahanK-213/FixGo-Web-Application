@@ -474,13 +474,18 @@ function ShopProfile() {
     <div className="max-w-6xl mx-auto pb-12 space-y-6">
       
       {/* Page Title Header */}
-      <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 m-0 tracking-tight">
-          Shop Profile
-        </h1>
-        <p className="text-slate-500 mt-1 text-sm font-medium">
-          Manage your shop information and public profile.
-        </p>
+      <div
+        className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4"
+        style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+      >
+        <div>
+          <h1 className="text-[28px] font-bold text-gray-900 m-0">
+            Shop Profile
+          </h1>
+          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+            Manage your shop information and public profile.
+          </p>
+        </div>
       </div>
 
       {/* Top Shop Banner Card */}
@@ -570,11 +575,11 @@ function ShopProfile() {
       </div>
 
       {/* 5-Tab Navigation Bar */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2 w-full">
         <button
           type="button"
           onClick={() => setActiveTab("info")}
-          className={`py-2.5 px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
+          className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
             activeTab === "info"
               ? "bg-green-50 text-green-600 border-green-600 shadow-2xs"
               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -586,7 +591,7 @@ function ShopProfile() {
         <button
           type="button"
           onClick={() => setActiveTab("hours")}
-          className={`py-2.5 px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
+          className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
             activeTab === "hours"
               ? "bg-green-50 text-green-600 border-green-600 shadow-2xs"
               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -598,7 +603,7 @@ function ShopProfile() {
         <button
           type="button"
           onClick={() => setActiveTab("gallery")}
-          className={`py-2.5 px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
+          className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
             activeTab === "gallery"
               ? "bg-green-50 text-green-600 border-green-600 shadow-2xs"
               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -610,7 +615,7 @@ function ShopProfile() {
         <button
           type="button"
           onClick={() => setActiveTab("tow")}
-          className={`py-2.5 px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
+          className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
             activeTab === "tow"
               ? "bg-green-50 text-green-600 border-green-600 shadow-2xs"
               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
@@ -622,13 +627,13 @@ function ShopProfile() {
         <button
           type="button"
           onClick={() => setActiveTab("services")}
-          className={`py-2.5 px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
+          className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl border font-semibold text-xs cursor-pointer transition-all flex items-center gap-2 ${
             activeTab === "services"
               ? "bg-green-50 text-green-600 border-green-600 shadow-2xs"
               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
           }`}
         >
-          <FontAwesomeIcon icon={faWrench} /> Services Offered
+          <FontAwesomeIcon icon={faWrench} /> Manage Services
         </button>
       </div>
 

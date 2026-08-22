@@ -96,11 +96,11 @@ function PaymentSlipModal({ invoice, bankDetails, onClose, onSuccess }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] w-full max-w-lg mx-4 overflow-hidden"
+        className="bg-white rounded-[18px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -202,58 +202,92 @@ function PaymentSlipModal({ invoice, bankDetails, onClose, onSuccess }) {
   );
 }
 
-// ── Invoice Row ─────────────────────────────────────────────────────────────
-
 function InvoiceRow({ invoice, isLast, onPayNow }) {
   const canPay = invoice.invoiceStatus === "Dispatched" || invoice.invoiceStatus === "Overdue";
   const isPending = invoice.invoiceStatus === "Verification Pending";
   const isPaid = invoice.invoiceStatus === "Paid";
 
   return (
-    <div
-      className={`grid gap-4 items-center py-4 px-6 [grid-template-columns:2fr_1fr_1fr_1fr_1fr] ${
-        !isLast ? "border-b border-gray-100" : ""
-      }`}
-    >
-      {/* Period + reference */}
-      <div>
-        <p className="text-[13px] font-bold text-gray-900 m-0">
-          {monthLabel(invoice.billingPeriodYear, invoice.billingPeriodMonth)}
-        </p>
-        <p className="text-[11px] text-gray-400 m-0 font-mono">{invoice.invoiceReference}</p>
+    <>
+      {/* Desktop Row (≥ 768px) */}
+      <div
+        className={`hidden md:grid gap-4 items-center py-4 px-6 [grid-template-columns:2fr_1fr_1fr_1fr_1fr] ${
+          !isLast ? "border-b border-gray-100" : ""
+        }`}
+      >
+        {/* Period + reference */}
+        <div>
+          <p className="text-[13px] font-bold text-gray-900 m-0">
+            {monthLabel(invoice.billingPeriodYear, invoice.billingPeriodMonth)}
+          </p>
+          <p className="text-[11px] text-gray-400 m-0 font-mono">{invoice.invoiceReference}</p>
+        </div>
+
+        {/* Completed requests */}
+        <p className="text-[13px] text-gray-700 m-0">{invoice.completedRequests} req.</p>
+
+        {/* Amount */}
+        <p className="text-[13px] font-bold text-gray-900 m-0">{formatLKR(invoice.totalAmount)}</p>
+
+        {/* Status */}
+        <StatusBadge status={invoice.invoiceStatus} />
+
+        {/* Action */}
+        <div>
+          {canPay && (
+            <button
+              onClick={() => onPayNow(invoice)}
+              className="rounded-[10px] bg-green-600 text-white border-none py-2 px-4 text-xs font-bold cursor-pointer hover:bg-green-700 transition-colors flex items-center gap-1.5"
+            >
+              <FiUploadCloud size={12} /> Pay Now
+            </button>
+          )}
+          {isPending && (
+            <span className="text-xs text-amber-600 font-semibold flex items-center gap-1.5">
+              <FiClock size={12} /> Awaiting Review
+            </span>
+          )}
+          {isPaid && (
+            <span className="text-xs text-green-600 font-semibold flex items-center gap-1.5">
+              <FiCheckCircle size={12} /> Settled
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Completed requests */}
-      <p className="text-[13px] text-gray-700 m-0">{invoice.completedRequests} req.</p>
+      {/* Mobile Card (< 768px) */}
+      <div className={`block md:hidden p-4 flex flex-col gap-3 ${!isLast ? "border-b border-gray-100" : ""}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-bold text-gray-900 m-0">
+              {monthLabel(invoice.billingPeriodYear, invoice.billingPeriodMonth)}
+            </p>
+            <p className="text-xs text-gray-400 m-0 font-mono mt-0.5">{invoice.invoiceReference}</p>
+          </div>
+          <StatusBadge status={invoice.invoiceStatus} />
+        </div>
 
-      {/* Amount */}
-      <p className="text-[13px] font-bold text-gray-900 m-0">{formatLKR(invoice.totalAmount)}</p>
+        <div className="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded-xl text-xs">
+          <div>
+            <span className="text-gray-400 block text-[10px] uppercase font-semibold">Completed Jobs</span>
+            <span className="font-semibold text-gray-800">{invoice.completedRequests} requests</span>
+          </div>
+          <div>
+            <span className="text-gray-400 block text-[10px] uppercase font-semibold">Total Amount</span>
+            <span className="font-bold text-gray-900">{formatLKR(invoice.totalAmount)}</span>
+          </div>
+        </div>
 
-      {/* Status */}
-      <StatusBadge status={invoice.invoiceStatus} />
-
-      {/* Action */}
-      <div>
         {canPay && (
           <button
             onClick={() => onPayNow(invoice)}
-            className="rounded-[10px] bg-green-600 text-white border-none py-2 px-4 text-xs font-bold cursor-pointer hover:bg-green-700 transition-colors flex items-center gap-1.5"
+            className="w-full py-2.5 px-4 rounded-xl bg-green-600 text-white font-bold text-xs cursor-pointer hover:bg-green-700 transition-colors flex items-center justify-center gap-1.5"
           >
-            <FiUploadCloud size={12} /> Pay Now
+            <FiUploadCloud size={14} /> Pay Now
           </button>
         )}
-        {isPending && (
-          <span className="text-xs text-amber-600 font-semibold flex items-center gap-1.5">
-            <FiClock size={12} /> Awaiting Review
-          </span>
-        )}
-        {isPaid && (
-          <span className="text-xs text-green-600 font-semibold flex items-center gap-1.5">
-            <FiCheckCircle size={12} /> Settled
-          </span>
-        )}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -290,14 +324,21 @@ function Billing() {
   return (
     <div className="flex flex-col gap-5">
       {/* Page heading */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div
+        className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4"
+        style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+      >
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 m-0">Billing &amp; Invoices</h1>
-          <p className="text-gray-500 mt-1.5 text-sm mb-0">Your platform subscription invoices and payment history.</p>
+          <h1 className="text-[28px] font-bold text-gray-900 m-0">
+            Billing &amp; Invoices
+          </h1>
+          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+            Your platform subscription invoices and payment history.
+          </p>
         </div>
         <button
           onClick={loadInvoices}
-          className="flex items-center gap-2 py-2.5 px-4 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-50 transition-colors shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
+          className="flex items-center gap-2 py-2.5 px-4 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-50 transition-colors shadow-[0_1px_4px_rgba(0,0,0,0.04)] self-start sm:self-auto"
         >
           <FiRefreshCw size={14} /> Refresh
         </button>
@@ -344,7 +385,7 @@ function Billing() {
         </div>
 
         {/* Table header */}
-        <div className="grid gap-4 py-2.5 px-6 bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-[0.05em] [grid-template-columns:2fr_1fr_1fr_1fr_1fr]">
+        <div className="hidden md:grid gap-4 py-2.5 px-6 bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-[0.05em] [grid-template-columns:2fr_1fr_1fr_1fr_1fr]">
           {["Period", "Requests", "Amount", "Status", "Action"].map(c => <span key={c}>{c}</span>)}
         </div>
 

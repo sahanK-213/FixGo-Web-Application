@@ -160,13 +160,15 @@ function Settings({ setActiveNav }) {
     <div className="flex flex-col gap-5" style={{ fontFamily: FONT }}>
       {/* ── Page heading ── */}
       <div
-          className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+          className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4"
           style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
       >
-          <h1 className="text-[28px] font-bold text-gray-900 m-0">Settings</h1>
-          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
-              Manage your account security, shop preferences and system settings.
-          </p>
+          <div>
+              <h1 className="text-[28px] font-bold text-gray-900 m-0">Settings</h1>
+              <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+                  Manage your account security, shop preferences and system settings.
+              </p>
+          </div>
       </div>
 
       {/* ── Account Settings ── */}

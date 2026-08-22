@@ -80,13 +80,13 @@ function InvoiceLedgerTable({ refreshKey }) {
       }
     >
       {/* Filter bar */}
-      <div className="flex flex-wrap items-end gap-4 px-6 py-5 border-b border-gray-100 bg-gradient-to-br from-slate-50 to-gray-50/60">
-        <div>
+      <div className="flex flex-wrap items-end gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 bg-gradient-to-br from-slate-50 to-gray-50/60">
+        <div className="w-full sm:w-auto">
           <label className="block text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mb-2">Status</label>
           <select
             value={filterStatus}
             onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-            className={`border-2 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none cursor-pointer shadow-sm transition-colors ${
+            className={`w-full sm:w-auto border-2 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none cursor-pointer shadow-sm transition-colors ${
               filterStatus ? "border-blue-400 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-800"
             }`}
           >
@@ -94,12 +94,12 @@ function InvoiceLedgerTable({ refreshKey }) {
             {statuses.filter(Boolean).map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <label className="block text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mb-2">Year</label>
           <select
             value={filterYear}
             onChange={e => { setFilterYear(e.target.value); setPage(1); }}
-            className={`border-2 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none cursor-pointer shadow-sm transition-colors ${
+            className={`w-full sm:w-auto border-2 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none cursor-pointer shadow-sm transition-colors ${
               filterYear ? "border-blue-400 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-800"
             }`}
           >
@@ -107,12 +107,12 @@ function InvoiceLedgerTable({ refreshKey }) {
             {years.filter(Boolean).map(y => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <label className="block text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mb-2">Month</label>
           <select
             value={filterMonth}
             onChange={e => { setFilterMonth(e.target.value); setPage(1); }}
-            className={`border-2 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none cursor-pointer shadow-sm transition-colors ${
+            className={`w-full sm:w-auto border-2 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none cursor-pointer shadow-sm transition-colors ${
               filterMonth ? "border-blue-400 bg-blue-50 text-blue-700" : "border-gray-200 bg-white text-gray-800"
             }`}
           >
@@ -123,10 +123,10 @@ function InvoiceLedgerTable({ refreshKey }) {
           </select>
         </div>
         {(filterStatus || filterYear || filterMonth) && (
-          <div className="self-end">
+          <div className="self-end w-full sm:w-auto">
             <button
               onClick={() => { setFilterStatus(""); setFilterYear(""); setFilterMonth(""); setPage(1); }}
-              className="py-2.5 px-5 rounded-xl border-2 border-red-200 bg-white text-red-500 text-sm font-bold cursor-pointer hover:bg-red-50 hover:border-red-300 active:scale-95 transition-all duration-150 shadow-sm"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-xl border-2 border-red-200 bg-white text-red-500 text-sm font-bold cursor-pointer hover:bg-red-50 hover:border-red-300 active:scale-95 transition-all duration-150 shadow-sm"
             >
               ✕ Clear
             </button>
@@ -140,8 +140,8 @@ function InvoiceLedgerTable({ refreshKey }) {
         </div>
       </div>
 
-      {/* Table header */}
-      <div className="grid gap-3 py-2.5 px-6 bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-[0.05em] [grid-template-columns:2.5fr_1fr_1fr_1fr_1fr_1fr]">
+      {/* Desktop Table Header (≥ 768px) */}
+      <div className="hidden md:grid gap-3 py-2.5 px-6 bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-[0.05em] [grid-template-columns:2.5fr_1fr_1fr_1fr_1fr_1fr]">
         {["Shop / Reference", "Period", "Category", "Requests", "Amount", "Status"].map(c => <span key={c}>{c}</span>)}
       </div>
 
@@ -161,42 +161,89 @@ function InvoiceLedgerTable({ refreshKey }) {
             const initials = (inv.shopName || "?").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
             const isUrgentStatus = inv.invoiceStatus === "Overdue" || inv.invoiceStatus === "Verification Pending";
             return (
-              <div
-                key={inv.id}
-                className={`grid gap-3 items-center py-3.5 px-6 [grid-template-columns:2.5fr_1fr_1fr_1fr_1fr_1fr] ${
-                  idx < arr.length - 1 ? "border-b border-gray-100" : ""
-                } hover:bg-gray-50/60 transition-colors`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-[11px] font-bold text-green-600 shrink-0">
-                    {initials}
+              <React.Fragment key={inv.id}>
+                {/* Desktop Row View (≥ 768px) */}
+                <div
+                  className={`hidden md:grid gap-3 items-center py-3.5 px-6 [grid-template-columns:2.5fr_1fr_1fr_1fr_1fr_1fr] ${
+                    idx < arr.length - 1 ? "border-b border-gray-100" : ""
+                  } hover:bg-gray-50/60 transition-colors`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-[11px] font-bold text-green-600 shrink-0">
+                      {initials}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-bold text-gray-900 m-0 truncate">{inv.shopName}</p>
+                      <p className="text-[11px] text-gray-400 m-0 font-mono">{inv.invoiceReference}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[13px] font-bold text-gray-900 m-0 truncate">{inv.shopName}</p>
-                    <p className="text-[11px] text-gray-400 m-0 font-mono">{inv.invoiceReference}</p>
+                  <p className="text-[13px] text-gray-700 m-0">
+                    {MONTH_NAMES[Number(inv.billingPeriodMonth)]} {inv.billingPeriodYear}
+                  </p>
+                  <p className="text-[12px] text-gray-500 m-0">{inv.shopCategory}</p>
+                  <p className="text-[13px] text-gray-700 m-0">{inv.completedRequests}</p>
+                  <p className="text-[13px] font-bold text-gray-900 m-0">
+                    LKR {Number(inv.totalAmount).toLocaleString("en-LK", { minimumFractionDigits: 2 })}
+                  </p>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full py-1 px-2.5 text-xs font-semibold ${STATUS_STYLES[inv.invoiceStatus] || ""}` }>
+                    {isUrgentStatus && (
+                      <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block"
+                        style={{ background: inv.invoiceStatus === "Overdue" ? "#dc2626" : "#d97706" }} />
+                    )}
+                    {inv.invoiceStatus}
+                  </span>
+                </div>
+
+                {/* Mobile Card View (< 768px) */}
+                <div className={`block md:hidden p-4 flex flex-col gap-3 ${idx < arr.length - 1 ? "border-b border-gray-100" : ""}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center text-xs font-bold text-green-600 shrink-0">
+                        {initials}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-gray-900 m-0 whitespace-normal break-words">{inv.shopName}</p>
+                        <p className="text-xs text-gray-400 m-0 font-mono mt-0.5">{inv.invoiceReference}</p>
+                      </div>
+                    </div>
+                    <span className={`inline-flex items-center gap-1 rounded-full py-1 px-2.5 text-xs font-semibold shrink-0 ${STATUS_STYLES[inv.invoiceStatus] || ""}`}>
+                      {isUrgentStatus && (
+                        <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block"
+                          style={{ background: inv.invoiceStatus === "Overdue" ? "#dc2626" : "#d97706" }} />
+                      )}
+                      {inv.invoiceStatus}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2.5 bg-gray-50 p-3 rounded-xl text-xs">
+                    <div>
+                      <span className="text-gray-400 block text-[10px] uppercase font-semibold">Billing Period</span>
+                      <span className="font-semibold text-gray-800">
+                        {MONTH_NAMES[Number(inv.billingPeriodMonth)]} {inv.billingPeriodYear}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block text-[10px] uppercase font-semibold">Category</span>
+                      <span className="font-semibold text-gray-800 whitespace-normal break-words">{inv.shopCategory}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block text-[10px] uppercase font-semibold">Requests</span>
+                      <span className="font-semibold text-gray-800">{inv.completedRequests}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block text-[10px] uppercase font-semibold">Total Amount</span>
+                      <span className="font-bold text-gray-900">
+                        LKR {Number(inv.totalAmount).toLocaleString("en-LK", { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <p className="text-[13px] text-gray-700 m-0">
-                  {MONTH_NAMES[Number(inv.billingPeriodMonth)]} {inv.billingPeriodYear}
-                </p>
-                <p className="text-[12px] text-gray-500 m-0">{inv.shopCategory}</p>
-                <p className="text-[13px] text-gray-700 m-0">{inv.completedRequests}</p>
-                <p className="text-[13px] font-bold text-gray-900 m-0">
-                  LKR {Number(inv.totalAmount).toLocaleString("en-LK", { minimumFractionDigits: 2 })}
-                </p>
-                <span className={`inline-flex items-center gap-1.5 rounded-full py-1 px-2.5 text-xs font-semibold ${STATUS_STYLES[inv.invoiceStatus] || ""}` }>
-                  {isUrgentStatus && (
-                    <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block"
-                      style={{ background: inv.invoiceStatus === "Overdue" ? "#dc2626" : "#d97706" }} />
-                  )}
-                  {inv.invoiceStatus}
-                </span>
-              </div>
+              </React.Fragment>
             );
           })}
           {/* Pagination */}
           {invoices.length > PAGE_SIZE && (
-            <div className="flex items-center justify-between px-6 py-3 border-t border-gray-100 bg-gray-50/40">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3 border-t border-gray-100 bg-gray-50/40">
               <span className="text-xs text-gray-400">
                 Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, invoices.length)} of {invoices.length} records
               </span>

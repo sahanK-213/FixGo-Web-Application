@@ -68,34 +68,34 @@ function Settings() {
       {sections.map((sec) => (
         <div
           key={sec.title}
-          className="bg-white border border-gray-200 shadow-[0_1px_4px_rgba(0,0,0,0.06)] rounded-2xl overflow-hidden flex"
+          className="bg-white border border-gray-200 shadow-[0_1px_4px_rgba(0,0,0,0.06)] rounded-2xl overflow-hidden flex flex-col lg:flex-row w-full max-w-full min-w-0"
         >
-          <div className="w-[260px] shrink-0 border-r border-gray-100 flex items-center gap-4 py-6 px-5">
-            <div className={`w-[52px] h-[52px] rounded-2xl flex items-center justify-center shrink-0 ${sec.iconBg}`}>
-              <FontAwesomeIcon icon={sec.icon} className={`text-2xl ${sec.iconColor}`} />
+          <div className="w-full lg:w-[260px] shrink-0 border-b lg:border-b-0 lg:border-r border-gray-100 flex items-center gap-4 py-5 px-5 sm:py-6 min-w-0">
+            <div className={`w-[48px] h-[48px] sm:w-[52px] sm:h-[52px] rounded-2xl flex items-center justify-center shrink-0 ${sec.iconBg}`}>
+              <FontAwesomeIcon icon={sec.icon} className={`text-xl sm:text-2xl ${sec.iconColor}`} />
             </div>
-            <div>
-              <div className="text-[15px] font-bold text-gray-900">{sec.title}</div>
-              <div className="text-xs text-gray-500 mt-1">{sec.subtitle}</div>
+            <div className="min-w-0 flex-1">
+              <div className="text-[15px] font-bold text-gray-900 leading-snug">{sec.title}</div>
+              <div className="text-xs text-gray-500 mt-0.5 leading-normal whitespace-normal break-words">{sec.subtitle}</div>
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0 w-full">
             {sec.rows.map((row, i) => (
               <button
                 key={row.label}
                 onClick={row.onClick || undefined}
-                className={`w-full flex-1 flex items-center justify-between py-4 px-5 bg-transparent border-none cursor-pointer font-sans hover:bg-gray-50 ${
+                className={`w-full flex-1 flex items-center justify-between gap-3 py-3.5 px-4 sm:py-4 sm:px-5 bg-transparent border-none cursor-pointer font-sans min-w-0 hover:bg-gray-50 ${
                   i < sec.rows.length - 1 ? "border-b border-gray-100" : ""
                 } ${row.onClick ? "hover:bg-green-50/40" : ""}`}
               >
-                <div className="flex items-center gap-3">
-                  <FontAwesomeIcon icon={row.icon} className="text-gray-400 w-4" />
-                  <span className="text-sm text-gray-700">{row.label}</span>
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                  <FontAwesomeIcon icon={row.icon} className="text-gray-400 w-4 shrink-0" />
+                  <span className="text-sm text-gray-700 font-medium whitespace-normal break-words min-w-0 flex-1">{row.label}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   {row.trailing && (
-                    <span className="text-xs text-gray-400">{row.trailing}</span>
+                    <span className="text-xs text-gray-400 font-normal">{row.trailing}</span>
                   )}
                   <FontAwesomeIcon icon={faChevronRight} className="text-[11px] text-gray-400" />
                 </div>

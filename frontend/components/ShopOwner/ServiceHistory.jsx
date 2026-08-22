@@ -60,13 +60,18 @@ function ServiceHistory({ shopCategory }) {
 
   return (
     <div className="w-full">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 m-0">
-          Service History
-        </h1>
-        <p className="text-gray-500 mt-1 text-xs sm:text-sm">
-          All completed service records.
-        </p>
+      <div
+        className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"
+        style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+      >
+        <div>
+          <h1 className="text-[28px] font-bold text-gray-900 m-0">
+            Service History
+          </h1>
+          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+            All completed service records.
+          </p>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs">

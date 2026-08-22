@@ -10,8 +10,8 @@ function DeclineConfirmModal({
   if (!requestPendingDecline) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/55 flex justify-center items-center z-[1000] p-5">
-      <div className="bg-white w-[420px] max-w-full rounded-2xl overflow-hidden shadow-[0_24px_48px_rgba(15,23,42,0.25)]">
+    <div className="fixed inset-0 bg-slate-900/55 flex justify-center items-center z-[1000] p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white w-[420px] max-w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto rounded-2xl shadow-[0_24px_48px_rgba(15,23,42,0.25)]">
         {/* Header */}
         <div className="pt-5.5 px-6.5 pb-1 flex items-start gap-3.5">
           <div className="w-10 h-10 rounded-[10px] bg-red-50 border border-red-200 flex items-center justify-center text-[19px] shrink-0 text-red-600">

@@ -246,17 +246,22 @@ function ServiceRequests({ shopCategory, shopCoordinates, fetchRequestCount }) {
   return (
     <div className="w-full font-[inherit]">
       {/* Header */}
-      <div className="mb-7">
-        <h1 className="text-[22px] font-bold text-slate-900 m-0 tracking-[-0.3px]">
-          Service Requests
-        </h1>
-        <p className="text-slate-500 mt-1.5 text-[15.5px] leading-normal">
-          Review and respond to incoming service requests.
-        </p>
+      <div
+        className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"
+        style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+      >
+        <div>
+          <h1 className="text-[28px] font-bold text-gray-900 m-0">
+            Service Requests
+          </h1>
+          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+            Review and respond to incoming service requests.
+          </p>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-5">
+      <div className="flex flex-wrap items-center gap-2 mb-5 w-full">
         {[
           { key: "new", label: "Service Requests" },
           { key: "missed", label: "Missed Opportunities" },
@@ -267,7 +272,7 @@ function ServiceRequests({ shopCategory, shopCoordinates, fetchRequestCount }) {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`py-2.5 px-5 rounded-[10px] border-[1.5px] font-semibold text-[14.5px] cursor-pointer transition-all duration-150 ease-in-out ${
+              className={`py-2 px-3 sm:py-2.5 sm:px-5 rounded-[10px] border-[1.5px] font-semibold text-xs sm:text-[14.5px] cursor-pointer transition-all duration-150 ease-in-out ${
                 isActive
                   ? "border-green-700 bg-[#ECFDF3] text-green-700"
                   : "border-[#E5E9F0] bg-white text-slate-500"

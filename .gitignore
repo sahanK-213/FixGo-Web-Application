@@ -1,14 +1,10 @@
-# --------------------
 # Backend
-# --------------------
 backend/vendor/
 backend/uploads/*
 backend/.env
 backend/.phpunit.cache
 
-# --------------------
 # General & Node
-# --------------------
 node_modules/
 logs
 *.log
@@ -18,9 +14,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# --------------------
 # Frontend
-# --------------------
 frontend/dist/
 frontend/dist-ssr/
 frontend/.env
@@ -28,9 +22,7 @@ frontend/.env.local
 frontend/.env.*.local
 frontend/*.local
 
-# --------------------
 # Editor directories and files
-# --------------------
 .vscode/*
 !.vscode/extensions.json
 .idea

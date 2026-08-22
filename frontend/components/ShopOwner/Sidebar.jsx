@@ -36,7 +36,7 @@ function Badge({ count }) {
   );
 }
 
-function Sidebar({ activeNav, setActiveNav, shopData, requestCount, activeRepairCount, notificationCount, reviewCount, billingCount, isOpen = false, onClose }) {
+function Sidebar({ activeNav, setActiveNav, shopData, requestCount, activeRepairCount, activeRepairBadgeCount, notificationCount, reviewCount, billingCount, isOpen = false, onClose }) {
   const navigate = useNavigate();
 
   const handleNav = (id) => {
@@ -48,7 +48,7 @@ function Sidebar({ activeNav, setActiveNav, shopData, requestCount, activeRepair
     const preserved = {};
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith("fixgo_read_notifs_")) {
+        if (key && (key.startsWith("fixgo_read_notifs_") || key === "fixgo_viewed_repairs")) {
             preserved[key] = localStorage.getItem(key);
         }
     }
@@ -135,7 +135,7 @@ function Sidebar({ activeNav, setActiveNav, shopData, requestCount, activeRepair
                       item.id === "requests"
                         ? requestCount
                         : item.id === "repairs"
-                        ? activeRepairCount
+                        ? (activeRepairBadgeCount !== undefined ? activeRepairBadgeCount : activeRepairCount)
                         : item.id === "notifications"
                         ? notificationCount
                         : item.id === "billing"

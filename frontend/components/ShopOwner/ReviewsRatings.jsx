@@ -175,19 +175,24 @@ function ReviewsRatings() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 m-0">
-          Reviews & Ratings
-        </h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          See what your customers are saying about your service.
-        </p>
+      <div
+        className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"
+        style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
+      >
+        <div>
+          <h1 className="text-[28px] font-bold text-gray-900 m-0">
+            Reviews & Ratings
+          </h1>
+          <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+            See what your customers are saying about your service.
+          </p>
+        </div>
       </div>
 
       {/* Summary Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6 shadow-[0_1px_4px_rgba(0,0,0,0.06)] flex flex-wrap items-center gap-8">
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 mb-6 shadow-[0_1px_4px_rgba(0,0,0,0.06)] flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
         <div className="flex flex-col items-center min-w-[140px]">
-          <p className="text-[56px] font-bold text-gray-900 m-0 leading-none">
+          <p className="text-[48px] sm:text-[56px] font-bold text-gray-900 m-0 leading-none">
             {totalReviews > 0 ? Number(averageRating).toFixed(1) : "0.0"}
           </p>
           <div className="mt-2">
@@ -198,7 +203,7 @@ function ReviewsRatings() {
           </p>
         </div>
 
-        <div className="flex-1 min-w-[200px] flex flex-col gap-2.5">
+        <div className="w-full sm:flex-1 min-w-0 flex flex-col gap-2.5">
           {starCounts.map((row) => {
             const pct = totalReviews > 0 ? Math.round((row.count / totalReviews) * 100) : 0;
             return (
@@ -237,12 +242,12 @@ function ReviewsRatings() {
       {/* Reviews List */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
         {/* Tabs */}
-        <div className="px-5 py-3.5 border-b border-gray-100 flex gap-1.5 flex-wrap">
+        <div className="px-4 sm:px-5 py-3 border-b border-gray-100 flex flex-wrap items-center gap-1.5 w-full">
           {tabs.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
-              className={`py-1.5 px-3.5 rounded-full border-none text-[13px] cursor-pointer ${
+              className={`py-1.5 px-3 sm:px-3.5 rounded-full border-none text-xs sm:text-[13px] cursor-pointer ${
                 activeTab === tab.value
                   ? "bg-orange-50 text-green-600 font-bold border-b-2 border-green-600"
                   : "bg-transparent text-gray-500 font-normal"

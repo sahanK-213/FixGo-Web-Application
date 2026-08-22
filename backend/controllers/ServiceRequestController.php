@@ -2,18 +2,15 @@
 class ServiceRequestController {
     private $serviceRequestModel;
     private $shopModel;
-    private $jwtHandler;
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
         require_once __DIR__ . '/../models/ServiceRequest.php';
         require_once __DIR__ . '/../models/Shop.php';
-        require_once __DIR__ . '/../config/JwtHandler.php';
 
         $this->serviceRequestModel = new ServiceRequest($db);
         $this->shopModel           = new Shop($db);
-        $this->jwtHandler          = new JwtHandler();
     }
 
     // ==========================================
@@ -450,10 +447,10 @@ public function updateTowTruckDetails($payload)
         }
     } catch (Throwable $e) {
         http_response_code(500);
+        error_log("updateTowTruckDetails failed: " . $e->getMessage());
         echo json_encode([
             "success" => false,
-            "message" => "Server error.",
-            "debug" => $e->getMessage() // remove in production
+            "message" => "Server error."
         ]);
     }
 }

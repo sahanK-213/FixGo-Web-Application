@@ -31,13 +31,13 @@ const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=16a34a&color=fff&
 
 function StatsCard({ icon, title, value, iconBg, iconColor }) {
     return (
-        <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-xl py-3 px-3.5">
-            <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: iconBg }}>
-                <FontAwesomeIcon icon={icon} className="text-[15px]" style={{ color: iconColor }} />
+        <div className="flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl p-3 sm:p-3.5 w-full min-w-0 max-w-full">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex-shrink-0 shrink-0 flex items-center justify-center" style={{ background: iconBg }}>
+                <FontAwesomeIcon icon={icon} className="text-sm sm:text-[15px]" style={{ color: iconColor }} />
             </div>
-            <div>
-                <p className="text-[11px] text-gray-500 font-mono m-0">{title}</p>
-                <p className="text-xl font-bold text-gray-900 m-0">{value}</p>
+            <div className="min-w-0 flex-1">
+                <p className="text-[11px] text-gray-500 font-mono m-0 leading-tight whitespace-normal break-words">{title}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900 m-0">{value}</p>
             </div>
         </div>
     );
@@ -380,21 +380,21 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
                 <div className="flex flex-wrap gap-6 items-start">
 
                     {/* Avatar + contact details */}
-                    <div className="flex gap-6 flex-1 min-w-[280px] items-start">
+                    <div className="flex gap-4 sm:gap-6 flex-1 min-w-0 items-start">
                         <div className="relative group cursor-pointer" onClick={() => openEditModal("info")}>
                             <img
                                 src={avatarSrc}
                                 alt={customer.name}
-                                className="w-[100px] h-[100px] rounded-full object-cover flex-shrink-0"
+                                className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] rounded-full object-cover flex-shrink-0"
                                 style={{ outline: "3px solid rgba(22,163,74,0.08)", outlineOffset: 2 }}
                             />
                             <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <FontAwesomeIcon icon={faCamera} className="text-white text-lg" />
                             </div>
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2.5">
-                                <h2 className="text-[22px] font-bold text-gray-900 m-0">{customer.name}</h2>
+                                <h2 className="text-xl sm:text-[22px] font-bold text-gray-900 m-0 break-words">{customer.name}</h2>
                                 <span className="rounded-full py-[3px] px-3 text-[11px] font-bold text-green-600" style={{ background: "rgba(22,163,74,0.08)" }}>
                                     Customer
                                 </span>
@@ -402,15 +402,15 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
                             <p className="text-xs text-gray-400 mt-1 mb-3">
                                 Member since {customer.memberSince}
                             </p>
-                            <div className="flex flex-col gap-1.5">
+                            <div className="flex flex-col gap-1.5 min-w-0">
                                 {[
                                     { icon: faEnvelope, val: customer.email },
                                     { icon: faPhone, val: customer.contactNumber || "Not provided" },
                                     { icon: faMapPin, val: customer.address || "Not provided" },
                                 ].map(({ icon, val }) => (
-                                    <div key={val} className="flex items-center gap-2 text-[13px] text-gray-500">
-                                        <FontAwesomeIcon icon={icon} className="text-green-600 opacity-60 w-3.5" />
-                                        <span>{val}</span>
+                                    <div key={val} className="flex items-center gap-2 text-[13px] text-gray-500 min-w-0">
+                                        <FontAwesomeIcon icon={icon} className="text-green-600 opacity-60 w-3.5 shrink-0" />
+                                        <span className="break-words">{val}</span>
                                     </div>
                                 ))}
                             </div>
@@ -418,9 +418,9 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
                     </div>
 
                     {/* Account overview */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-[18px] p-5 min-w-[280px] w-[400px] flex-shrink-0">
+                    <div className="bg-gray-50 border border-gray-200 rounded-[18px] p-4 sm:p-5 w-full max-w-full min-w-0 lg:w-[400px] shrink-0">
                         <p className="text-[13px] font-bold text-gray-900 mb-3.5 mt-0">Account Overview</p>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2.5 w-full min-w-0">
                             <StatsCard icon={faCar} title="Total Repairs" value={String(stats.totalRepairs)} iconBg="rgba(22,163,74,0.08)" iconColor="#16A34A" />
                             <StatsCard icon={faCircleCheck} title="Completed" value={String(stats.completed)} iconBg="rgba(22, 163, 74,0.08)" iconColor="#16A34A" />
                             <StatsCard icon={faCalendarDays} title="Appointments" value={String(stats.appointments)} iconBg="#EDF3FF" iconColor="#2563EB" />

@@ -4,8 +4,8 @@ function RequestDetailsModal({ selectedRequest, setSelectedRequest, shopCategory
   if (!selectedRequest) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/55 flex justify-center items-center z-[999] p-5">
-      <div className="bg-white w-[600px] max-w-full max-h-[85vh] overflow-y-auto rounded-[20px] p-7 shadow-[0_24px_48px_rgba(15,23,42,0.25)]">
+    <div className="fixed inset-0 bg-slate-900/55 flex justify-center items-center z-[999] p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white w-[600px] max-w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto rounded-[20px] p-5 sm:p-7 shadow-[0_24px_48px_rgba(15,23,42,0.25)]">
         <h2 className="m-0 mb-5 text-xl font-bold text-slate-900">
           Service Request Details
         </h2>

@@ -1,12 +1,11 @@
 name: Deploy Backend to Azure App Service
 
 # Phase 1 constraint: Safety Lock 2
-# Currently restricted to manual execution. 
-# Once Azure is active, we will change this back to `on: push` for the dockerCI/CD branch.
+# Deploys automatically when changes are pushed to main
 on:
   push:
     branches:
-      - dockerCI/CD
+      - main
   workflow_dispatch:
 
 jobs:
