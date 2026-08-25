@@ -13,7 +13,9 @@ import {
   faUserSlash,
   faTrash,
   faTriangleExclamation,
-  faSpinner
+  faSpinner,
+  faEye,
+  faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../src/services/api";
 
@@ -72,6 +74,10 @@ function Settings({ setActiveNav }) {
   const [pwdLoading, setPwdLoading] = useState(false);
   const [pwdMsg, setPwdMsg] = useState({ type: "", text: "" });
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -103,8 +109,9 @@ function Settings({ setActiveNav }) {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setPwdMsg({ type: "error", text: "New password must be at least 6 characters long." });
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      setPwdMsg({ type: "error", text: "Password must be at least 8 characters long and include an uppercase letter, lowercase letter, and a number." });
       return;
     }
 
@@ -220,48 +227,75 @@ function Settings({ setActiveNav }) {
                 <label className="text-xs font-semibold text-slate-600 block mb-1">
                   Current Password *
                 </label>
-                <input
-                  type="password"
-                  value={pwdForm.currentPassword}
-                  onChange={(e) => {
-                    setPwdForm({ ...pwdForm, currentPassword: e.target.value });
-                    if (pwdMsg.text) setPwdMsg({ type: "", text: "" });
-                  }}
-                  placeholder="Enter current password"
-                  className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 box-border"
-                />
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={pwdForm.currentPassword}
+                    onChange={(e) => {
+                      setPwdForm({ ...pwdForm, currentPassword: e.target.value });
+                      if (pwdMsg.text) setPwdMsg({ type: "", text: "" });
+                    }}
+                    placeholder="Enter current password"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 box-border pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 focus:outline-none"
+                  >
+                    <FontAwesomeIcon icon={showCurrentPassword ? faEyeSlash : faEye} />
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-slate-600 block mb-1">
                   New Password *
                 </label>
-                <input
-                  type="password"
-                  value={pwdForm.newPassword}
-                  onChange={(e) => {
-                    setPwdForm({ ...pwdForm, newPassword: e.target.value });
-                    if (pwdMsg.text) setPwdMsg({ type: "", text: "" });
-                  }}
-                  placeholder="At least 6 characters"
-                  className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 box-border"
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={pwdForm.newPassword}
+                    onChange={(e) => {
+                      setPwdForm({ ...pwdForm, newPassword: e.target.value });
+                      if (pwdMsg.text) setPwdMsg({ type: "", text: "" });
+                    }}
+                    placeholder="Enter new password"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 box-border pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 focus:outline-none"
+                  >
+                    <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
+                  </button>
+                </div>
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-slate-600 block mb-1">
                   Confirm New Password *
                 </label>
-                <input
-                  type="password"
-                  value={pwdForm.confirmPassword}
-                  onChange={(e) => {
-                    setPwdForm({ ...pwdForm, confirmPassword: e.target.value });
-                    if (pwdMsg.text) setPwdMsg({ type: "", text: "" });
-                  }}
-                  placeholder="Re-enter new password"
-                  className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 box-border"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={pwdForm.confirmPassword}
+                    onChange={(e) => {
+                      setPwdForm({ ...pwdForm, confirmPassword: e.target.value });
+                      if (pwdMsg.text) setPwdMsg({ type: "", text: "" });
+                    }}
+                    placeholder="Re-enter new password"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500 box-border pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 focus:outline-none"
+                  >
+                    <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                  </button>
+                </div>
               </div>
 
               {pwdMsg.text && (

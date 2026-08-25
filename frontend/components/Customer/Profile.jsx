@@ -277,8 +277,9 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
                 setModalError("Current password is required to set a new password.");
                 return;
             }
-            if (formData.newPassword.length < 6) {
-                setModalError("New password must be at least 6 characters long.");
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordRegex.test(formData.newPassword)) {
+                setModalError("Password must be at least 8 characters long and include an uppercase letter, lowercase letter, and a number.");
                 return;
             }
             if (formData.newPassword !== formData.confirmPassword) {

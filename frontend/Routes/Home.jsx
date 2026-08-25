@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { QuickSearchHub } from '../components/Home/QuickSearchHub';
 import { NavBar } from '../components/NavBar'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBicycle, faSearch, faCar, faTruck, faWarehouse, faTriangleExclamation, faLocationDot, faUserTie, faArrowRight, faWrench, faRocket, faLocationCrosshairs } from "@fortawesome/free-solid-svg-icons";
 import Sign from "../components/SignIn"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import car from "../src/assets/car.avif"
 import serviceCenter from "../src/assets/service.jpg"
 import { Footer } from "../components/footer"
@@ -16,6 +16,16 @@ import About from '../components/Home/About';
 function Home() {
 
     const [showSignIn, setShowSignIn] = useState(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.scrollToRegister) {
+            // Slight delay to allow DOM to render and ScrollToTop to finish
+            setTimeout(() => {
+                document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
+            }, 100);
+        }
+    }, [location]);
 
     return (
 

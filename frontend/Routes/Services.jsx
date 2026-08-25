@@ -1,4 +1,5 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { NavBar } from "../components/NavBar";
 import Customer from "../components/Customer/CustomerControllDashboard";
@@ -10,15 +11,7 @@ function Services() {
 
     // 1. Guard against completely unauthenticated guests
     if (!token) {
-        return (
-            <>
-                <NavBar />
-                <div className="h-[80vh] w-full flex flex-col items-center justify-center gap-4 text-center px-4">
-                    <h1 className="text-3xl font-bold text-[#14532d]">Please login to access the services.</h1>
-                    <p className="text-slate-500 text-lg">Use the SIGN IN button at the top right to log in and access your dashboard.</p>
-                </div>
-            </>
-        );
+        return <Navigate to="/login" replace />;
     }
 
     let userRole = "";
@@ -31,14 +24,7 @@ function Services() {
         const currentTime = Date.now() / 1000;
         if (decoded.exp < currentTime) {
             localStorage.clear();
-            return (
-                <>
-                    <NavBar />
-                    <div className="h-[80vh] w-full flex flex-col items-center justify-center gap-4 text-center px-4">
-                        <h1 className="text-3xl font-bold text-red-500">Your session has expired. Please log in again.</h1>
-                    </div>
-                </>
-            );
+            return <Navigate to="/login" replace />;
         }
 
         // 4. Extract the dynamic role guaranteed by the backend
@@ -49,14 +35,7 @@ function Services() {
         // Triggers if someone manually alters the token string characters
         console.error("Token manipulation or corruption detected.");
         localStorage.clear();
-        return (
-            <>
-                <NavBar />
-                <div className="h-[80vh] w-full flex flex-col items-center justify-center gap-4 text-center px-4">
-                    <h1 className="text-3xl font-bold text-red-500">Invalid Security Token. Access Blocked.</h1>
-                </div>
-            </>
-        );
+        return <Navigate to="/login" replace />;
     }
 
     // 5. HELPER FUNCTION: Return the proper dashboard block

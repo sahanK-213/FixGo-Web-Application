@@ -1,9 +1,10 @@
 import { useState, useEffect, Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faHandshake, faWrench, faFlag, faShieldHalved,
     faCar, faChevronDown, faChevronUp, faCalendarDays,
-    faClock, faCircleCheck, faCircleXmark,
+    faClock, faCircleCheck, faCircleXmark, faStore, faExternalLinkAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../src/services/api";
 
@@ -52,6 +53,7 @@ function InfoRow({ label, value }) {
 }
 
 export default function RepairStatus({targetRequestId }) {
+    const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
     const [loading, setLoading]   = useState(true);
     const [expanded, setExpanded] = useState(null);
@@ -322,6 +324,20 @@ export default function RepairStatus({targetRequestId }) {
                                             <InfoRow label="Preferred Date" value={req.preferred_date ? formatDate(req.preferred_date) : null} />
                                             <InfoRow label="Current Status" value={cfg.label} />
                                         </div>
+                                        
+                                        {req.shop_id && (
+                                            <div className="mt-5 pt-5 border-t border-gray-100 flex justify-end">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); navigate(`/shop/${req.shop_id}`); }}
+                                                    className="flex items-center justify-center gap-1.5 bg-white text-gray-700 border-[1.5px] border-gray-200 rounded-xl py-2 px-4 text-[13px] font-semibold cursor-pointer transition-all duration-150 hover:border-green-600 hover:text-green-600"
+                                                    style={{ fontFamily: FONT }}
+                                                >
+                                                    <FontAwesomeIcon icon={faStore} className="text-xs" />
+                                                    View Shop & Directions
+                                                    <FontAwesomeIcon icon={faExternalLinkAlt} className="text-[10px]" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                 </div>

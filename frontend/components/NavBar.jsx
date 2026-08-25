@@ -172,7 +172,13 @@ export const NavBar = () => {
     const handleRegister = () => {
         setShowSignIn(false);
         setMobileMenuOpen(false);
-        document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
+        
+        const registerSection = document.getElementById("register");
+        if (registerSection) {
+            registerSection.scrollIntoView({ behavior: "smooth" });
+        } else {
+            navigate('/', { state: { scrollToRegister: true } });
+        }
     };
 
     const handleNavigateToNotifications = (id = null) => {
