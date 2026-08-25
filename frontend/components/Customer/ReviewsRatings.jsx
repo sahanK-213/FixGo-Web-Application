@@ -64,12 +64,12 @@ function ReviewsRatings() {
 
             {/* ── Page heading ── */}
             <div
-                className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex justify-between items-center"
+                className="rounded-[18px] p-4 sm:p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 w-full min-w-0"
                 style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
             >
-                <div>
-                    <h1 className="text-[28px] font-bold text-gray-900 m-0">Reviews & Ratings</h1>
-                    <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+                <div className="min-w-0 flex-1">
+                    <h1 className="text-xl sm:text-[28px] font-bold text-gray-900 m-0 break-words">Reviews & Ratings</h1>
+                    <p className="text-gray-500 mt-1 sm:mt-1.5 mb-0 text-xs sm:text-sm whitespace-normal break-words">
                         See your reviews and ratings for past services.
                     </p>
                 </div>
@@ -78,21 +78,23 @@ function ReviewsRatings() {
             {/* ── My Reviews list ── */}
             <div className="bg-white border border-gray-200 rounded-[18px] shadow-[0_1px_4px_rgba(0,0,0,0.06)] overflow-hidden">
 
-                <div className="flex items-center justify-between py-4 px-6 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 py-4 px-4 sm:px-6 border-b border-gray-100 w-full min-w-0">
                     <h2 className="text-[15px] font-bold text-gray-900 m-0">My Reviews</h2>
-                    <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-[10px] py-2 px-3 text-[13px]">
-                        <FontAwesomeIcon icon={faCalendarDays} className="text-gray-400" />
-                        <select
-                            value={filter}
-                            onChange={(e) => setFilter(e.target.value)}
-                            className="border-none outline-none text-[13px] text-gray-700 bg-transparent cursor-pointer"
-                            style={{ fontFamily: FONT }}
-                        >
-                            <option>All Time</option>
-                            <option>Last 3 Months</option>
-                            <option>Last 6 Months</option>
-                            <option>This Year</option>
-                        </select>
+                    <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-[10px] py-2 px-3 text-[13px] w-full sm:w-auto justify-between sm:justify-start">
+                        <div className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faCalendarDays} className="text-gray-400" />
+                            <select
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                                className="border-none outline-none text-[13px] text-gray-700 bg-transparent cursor-pointer"
+                                style={{ fontFamily: FONT }}
+                            >
+                                <option>All Time</option>
+                                <option>Last 3 Months</option>
+                                <option>Last 6 Months</option>
+                                <option>This Year</option>
+                            </select>
+                        </div>
                         <FontAwesomeIcon icon={faChevronDown} className="text-[11px] text-gray-400" />
                     </div>
                 </div>
@@ -105,39 +107,77 @@ function ReviewsRatings() {
                     reviews.map((review, idx) => {
                         const isLast = idx === reviews.length - 1;
                         return (
-                            <div
-                                key={review.id}
-                                className={`grid items-start ${!isLast ? "border-b border-gray-100" : "border-b-0"}`}
-                                style={{ gridTemplateColumns: "auto 1fr auto 1fr" }}
-                            >
-                                <div className="py-5 pr-5 pl-6 flex items-center">
-                                    <div className="w-[52px] h-[52px] rounded-full bg-[#EDF9F0] flex items-center justify-center">
-                                        <FontAwesomeIcon icon={faWrench} className="text-xl text-green-600" />
+                            <div key={review.id}>
+                                {/* ── Desktop Grid View (≥ 768px) ── */}
+                                <div
+                                    className={`hidden md:grid items-start ${!isLast ? "border-b border-gray-100" : "border-b-0"}`}
+                                    style={{ gridTemplateColumns: "auto 1fr auto 1fr" }}
+                                >
+                                    <div className="py-5 pr-5 pl-6 flex items-center">
+                                        <div className="w-[52px] h-[52px] rounded-full bg-[#EDF9F0] flex items-center justify-center">
+                                            <FontAwesomeIcon icon={faWrench} className="text-xl text-green-600" />
+                                        </div>
+                                    </div>
+
+                                    <div className="py-5 pr-5 pl-0 border-r border-gray-100 flex flex-col justify-center">
+                                        <p className="text-sm font-semibold text-gray-900 m-0">
+                                            {review.issue_category || review.vehicle_brand || "Service"}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1 mb-0">{review.shop_name}</p>
+                                        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-400">
+                                            <FontAwesomeIcon icon={faCalendarDays} className="text-[11px]" />
+                                            <span>{new Date(review.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="py-5 px-6 border-r border-gray-100 flex flex-col items-center justify-center">
+                                        <p className="text-2xl font-bold text-gray-900 m-0">
+                                            {Number(review.rating).toFixed(1)}
+                                        </p>
+                                        <div className="mt-1"><StarDisplay rating={Number(review.rating)} /></div>
+                                    </div>
+
+                                    <div className="py-5 px-6 flex items-center">
+                                        <p className="text-[13px] text-gray-700 leading-relaxed m-0 whitespace-pre-line">
+                                            {review.comment || "No comment left."}
+                                        </p>
                                     </div>
                                 </div>
 
-                                <div className="py-5 pr-5 pl-0 border-r border-gray-100 flex flex-col justify-center">
-                                    <p className="text-sm font-semibold text-gray-900 m-0">
-                                        {review.issue_category || review.vehicle_brand || "Service"}
-                                    </p>
-                                    <p className="text-xs text-gray-500 mt-1 mb-0">{review.shop_name}</p>
-                                    <div className="flex items-center gap-1.5 mt-1.5 text-xs text-gray-400">
-                                        <FontAwesomeIcon icon={faCalendarDays} className="text-[11px]" />
-                                        <span>{new Date(review.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+                                {/* ── Mobile Card View (< 768px) ── */}
+                                <div className={`block md:hidden p-4 flex flex-col gap-3.5 ${!isLast ? "border-b border-gray-100" : ""}`}>
+                                    <div className="flex items-start gap-3 w-full min-w-0">
+                                        <div className="w-10 h-10 rounded-full bg-[#EDF9F0] flex items-center justify-center shrink-0 mt-0.5">
+                                            <FontAwesomeIcon icon={faWrench} className="text-base text-green-600" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-bold text-gray-900 m-0 whitespace-normal break-words">
+                                                {review.issue_category || review.vehicle_brand || "Service"}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-0.5 mb-0 whitespace-normal break-words">{review.shop_name}</p>
+                                            <div className="flex items-center gap-1.5 mt-1 text-[11px] text-gray-400">
+                                                <FontAwesomeIcon icon={faCalendarDays} className="text-[10px]" />
+                                                <span>{new Date(review.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="py-5 px-6 border-r border-gray-100 flex flex-col items-center justify-center">
-                                    <p className="text-2xl font-bold text-gray-900 m-0">
-                                        {Number(review.rating).toFixed(1)}
-                                    </p>
-                                    <div className="mt-1"><StarDisplay rating={Number(review.rating)} /></div>
-                                </div>
+                                    <div className="bg-gray-50/80 rounded-xl p-3 flex items-center justify-between gap-3 w-full min-w-0 border border-gray-100">
+                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Rating</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-base font-bold text-gray-900">
+                                                {Number(review.rating).toFixed(1)}
+                                            </span>
+                                            <StarDisplay rating={Number(review.rating)} />
+                                        </div>
+                                    </div>
 
-                                <div className="py-5 px-6 flex items-center">
-                                    <p className="text-[13px] text-gray-700 leading-relaxed m-0 whitespace-pre-line">
-                                        {review.comment || "No comment left."}
-                                    </p>
+                                    <div className="w-full min-w-0">
+                                        <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Review</span>
+                                        <p className={`text-[13px] leading-relaxed m-0 whitespace-normal break-words ${review.comment ? "text-gray-700" : "text-gray-400 italic"}`}>
+                                            {review.comment || "No comment left."}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         );

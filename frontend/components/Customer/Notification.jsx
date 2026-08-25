@@ -289,32 +289,32 @@ export default function Notification({ initialSelectedId, onClearSelection }) {
 
             {/* ── Header ── */}
             <div
-                className="rounded-[18px] p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex justify-between items-center"
+                className="rounded-[18px] p-4 sm:p-6 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 w-full min-w-0"
                 style={{ background: "linear-gradient(180deg, #EEF7F0, #FFFFFF)" }}
             >
-                <div>
-                    <h1 className="text-[28px] font-bold text-gray-900 m-0">Notifications</h1>
-                    <p className="text-gray-500 mt-1.5 mb-0 text-sm">
+                <div className="min-w-0 flex-1">
+                    <h1 className="text-xl sm:text-[28px] font-bold text-gray-900 m-0 break-words">Notifications</h1>
+                    <p className="text-gray-500 mt-1 sm:mt-1.5 mb-0 text-xs sm:text-sm whitespace-normal break-words">
                         Stay updated with the latest repair updates and alerts.
                     </p>
                 </div>
                 {unreadCount > 0 && (
-                    <span className="bg-green-600 text-white rounded-full py-1 px-3.5 text-xs font-bold">
+                    <span className="bg-green-600 text-white rounded-full py-1 px-3.5 text-xs font-bold shrink-0 self-start sm:self-auto">
                         {unreadCount} unread
                     </span>
                 )}
             </div>
 
             {/* ── Tab Bar ── */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full min-w-0">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                     {TABS.map(tab => {
                         const active = activeTab === tab.key;
                         return (
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`rounded-full border py-1.5 px-4 text-[13px] font-semibold cursor-pointer transition-all duration-150
+                                className={`rounded-full border py-1.5 px-3.5 sm:px-4 text-xs sm:text-[13px] font-semibold cursor-pointer transition-all duration-150
                                     ${active ? "border-green-600 text-green-600" : "border-gray-200 bg-white text-gray-700"}`}
                                 style={{ background: active ? "rgba(22,163,74,0.08)" : undefined, fontFamily: FONT }}
                             >
@@ -326,7 +326,7 @@ export default function Notification({ initialSelectedId, onClearSelection }) {
                 {unreadCount > 0 && (
                     <button
                         onClick={markAllRead}
-                        className="flex items-center gap-1.5 border border-gray-200 bg-white rounded-[10px] py-2 px-4 text-[13px] font-semibold text-gray-700 cursor-pointer shadow-[0_1px_4px_rgba(0,0,0,0.06)]"
+                        className="w-full sm:w-auto flex items-center justify-center gap-1.5 border border-gray-200 bg-white rounded-[10px] py-2 px-4 text-xs sm:text-[13px] font-semibold text-gray-700 cursor-pointer shadow-[0_1px_4px_rgba(0,0,0,0.06)] shrink-0"
                         style={{ fontFamily: FONT }}
                     >
                         <FontAwesomeIcon icon={faCheck} className="text-[11px] text-green-600" />
