@@ -6,6 +6,7 @@ import {
     faEye, faEyeSlash
 } from "@fortawesome/free-solid-svg-icons";
 
+// Modal component for editing customer profile information, security settings, and managing vehicles
 export const EditProfileModal = ({
     isModalOpen, setIsModalOpen,
     activeTab, setActiveTab,

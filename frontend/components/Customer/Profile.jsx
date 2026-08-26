@@ -29,6 +29,7 @@ import {
 const FONT = "'Segoe UI', system-ui, sans-serif";
 const DEFAULT_AVATAR = "https://ui-avatars.com/api/?background=16a34a&color=fff&name=";
 
+// Displays a statistics card in the account overview
 function StatsCard({ icon, title, value, iconBg, iconColor }) {
     return (
         <div className="flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl p-3 sm:p-3.5 w-full min-w-0 max-w-full">
@@ -43,6 +44,7 @@ function StatsCard({ icon, title, value, iconBg, iconColor }) {
     );
 }
 
+// Renders a generic row for displaying key-value pairs (e.g. personal info)
 function InfoRow({ label, value }) {
     return (
         <div className="flex justify-between items-center pb-3.5 border-b border-gray-100">
@@ -52,6 +54,7 @@ function InfoRow({ label, value }) {
     );
 }
 
+// Renders a row with security information and an optional action button
 function SecurityRow({ label, value, actionLabel, onAction }) {
     return (
         <div className="flex justify-between items-center bg-gray-50 rounded-[10px] py-3 px-4 border border-gray-100">
@@ -71,6 +74,7 @@ function SecurityRow({ label, value, actionLabel, onAction }) {
     );
 }
 
+// Main Profile component managing customer data, vehicles, and settings
 function Profile({ initialModalOpen = false, initialTab = "info" }) {
     const [customer, setCustomer] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -115,6 +119,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         }
     }, [initialModalOpen, initialTab]);
 
+    // Fetches the customer profile details from the server
     const fetchProfile = () => {
         api.get("customer/getCustomerProfile.php")
             .then((data) => {
@@ -149,6 +154,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         });
     }, []);
     
+    // Fetches the customer's registered vehicles from the server
     const fetchVehicles = () => {
         api.get("customer/getVehicles.php").then(res => {
             if (res.success) setVehicles(res.vehicles || []);
@@ -178,6 +184,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         fetchStats();
     }, []);
 
+    // Opens the modal to edit profile details or security settings
     const openEditModal = (tab = "info") => {
         if (customer) {
             setFormData({
@@ -197,6 +204,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         setIsModalOpen(true);
     };
 
+    // Handles profile photo selection and generates a preview URL
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -210,6 +218,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         }
     };
 
+    // Handles adding a new vehicle or updating an existing one
     const handleSaveVehicle = async (e) => {
         e.preventDefault();
         setModalError(""); setModalSuccess(""); setSaving(true);
@@ -230,6 +239,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         }
     };
     
+    // Handles deleting a vehicle based on its ID
     const handleDeleteVehicle = async (id) => {
         try {
             const res = await api.post("customer/deleteVehicle.php", { id });
@@ -246,6 +256,7 @@ function Profile({ initialModalOpen = false, initialTab = "info" }) {
         }
     };
 
+    // Handles updating the customer's profile details and password
     const handleSave = async (e) => {
         e.preventDefault();
         setModalError("");

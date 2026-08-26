@@ -396,10 +396,14 @@ function Billing() {
             <p className="text-sm">Loading invoices…</p>
           </div>
         ) : invoices.length === 0 ? (
-          <div className="py-16 flex flex-col items-center gap-3 text-gray-400">
-            <FiFileText size={36} />
-            <p className="text-sm font-medium">No invoices yet</p>
-            <p className="text-xs text-gray-400">Your billing history will appear here once invoices are issued.</p>
+          <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center w-full min-w-0">
+            <FiFileText className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+            <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+              No invoices yet
+            </p>
+            <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+              Your billing history will appear here once invoices are issued.
+            </p>
           </div>
         ) : (
           invoices.map((inv, idx) => (

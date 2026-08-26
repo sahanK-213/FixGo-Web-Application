@@ -1,3 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWrench } from "@fortawesome/free-solid-svg-icons";
+
 export const COMMON_CATEGORIES = [
   "Mechanical",
   "Electrical",
@@ -49,7 +52,15 @@ function ShopServicesTab({
               ))}
             </div>
           ) : (
-            <p className="text-xs text-slate-400 italic mb-4">No custom services added yet.</p>
+            <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center border-2 border-dashed border-slate-200 rounded-2xl w-full min-w-0">
+              <FontAwesomeIcon icon={faWrench} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+              <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+                No custom services added yet
+              </p>
+              <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+                Add custom services and starting prices to let customers know what repairs your shop offers.
+              </p>
+            </div>
           )}
           <button
             type="button"

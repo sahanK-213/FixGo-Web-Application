@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { api } from "../src/services/api";
@@ -19,6 +19,7 @@ function Sign({ setShowSignIn }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
 
     const handleUserLogin = async (event) => {
@@ -71,7 +72,7 @@ function Sign({ setShowSignIn }) {
             {/* 1st Update: The Background Overlay */}
             <div
                 className="absolute inset-0 bg-black/50"
-                onClick={handleClose} 
+                onClick={handleClose}
                 aria-hidden="true"
             />
 
@@ -84,7 +85,7 @@ function Sign({ setShowSignIn }) {
                 <FontAwesomeIcon
                     icon={faXmark}
                     className="absolute top-4 right-4 cursor-pointer text-xl text-gray-600 hover:text-gray-900 transition-colors"
-                    onClick={handleClose} 
+                    onClick={handleClose}
                 />
 
                 <h2 className="text-2xl font-semibold mb-2">Sign in to FixGo</h2>
@@ -93,8 +94,8 @@ function Sign({ setShowSignIn }) {
                 {error && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md flex items-center justify-between">
                         <span>{error}</span>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="text-red-400 hover:text-red-600 transition-colors ml-2 font-bold text-lg leading-none"
                             onClick={() => setError("")}
                             aria-label="Dismiss error"
@@ -126,18 +127,27 @@ function Sign({ setShowSignIn }) {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                            type="password"
-                            required
-                            className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            placeholder="Enter your password"
-                            name="password"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                if (error) setError("");
-                            }}
-                        />
+                        <div className="relative mt-1">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                className="block w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-green-500 focus:outline-none pr-10"
+                                placeholder="Enter your password"
+                                name="password"
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    if (error) setError("");
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none flex items-center"
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                            </button>
+                        </div>
                     </div>
 
                     <button

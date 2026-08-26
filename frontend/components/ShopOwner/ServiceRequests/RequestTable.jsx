@@ -5,6 +5,9 @@ import {
   faPalette,
   faTruck,
   faLocationDot,
+  faClipboardList,
+  faClock,
+  faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
 function Avatar({ initials, color, size = 40 }) {
@@ -21,6 +24,28 @@ function Avatar({ initials, color, size = 40 }) {
       className="rounded-full flex items-center justify-center font-bold shrink-0 border-[1.5px] tracking-[0.2px]"
     >
       {initials}
+    </div>
+  );
+}
+
+function EmptyStateView({ activeTab }) {
+  const icon = activeTab === "new" ? faClipboardList : activeTab === "missed" ? faClock : faCircleXmark;
+  const title = activeTab === "new" ? "No service requests" : activeTab === "missed" ? "No missed requests" : "No declined requests";
+  const desc = activeTab === "new"
+    ? "There are no new service requests waiting for your response."
+    : activeTab === "missed"
+    ? "You haven't missed any incoming customer service requests."
+    : "You have not declined any customer service requests.";
+
+  return (
+    <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center w-full min-w-0">
+      <FontAwesomeIcon icon={icon} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+      <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+        {title}
+      </p>
+      <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+        {desc}
+      </p>
     </div>
   );
 }
@@ -61,13 +86,7 @@ function RequestTable({
 
         {/* Rows */}
         {visibleRequests.length === 0 ? (
-          <div className="py-12 text-center text-slate-500 text-[14.5px]">
-            {activeTab === "new"
-              ? "No service requests found"
-              : activeTab === "missed"
-              ? "No missed opportunities"
-              : "No declined requests"}
-          </div>
+          <EmptyStateView activeTab={activeTab} />
         ) : (
           visibleRequests.map((r, i) => (
             <div
@@ -198,13 +217,7 @@ function RequestTable({
       {/* Mobile Card List View (< 768px) */}
       <div className="block md:hidden divide-y divide-gray-100">
         {visibleRequests.length === 0 ? (
-          <div className="py-12 text-center text-slate-500 text-sm">
-            {activeTab === "new"
-              ? "No service requests found"
-              : activeTab === "missed"
-              ? "No missed opportunities"
-              : "No declined requests"}
-          </div>
+          <EmptyStateView activeTab={activeTab} />
         ) : (
           visibleRequests.map((r) => (
             <div key={r.id} className="p-4 flex flex-col gap-3">

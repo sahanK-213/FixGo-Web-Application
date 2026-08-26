@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaWhatsapp, FaMapMarkerAlt } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWrench } from "@fortawesome/free-solid-svg-icons";
 import { api } from "../../src/services/api";
 
 
@@ -162,24 +164,35 @@ function ActiveRepairs({ fetchActiveRepairCount }) {
       </div>
 
       <div className="bg-white rounded-[18px] border border-[#E7EFE8] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-        {/* Desktop View (≥ 768px) */}
-        <div className="hidden md:block">
-          {/* Header */}
-          <div className="px-5 py-3.5 border-b border-gray-100 grid gap-3 [grid-template-columns:2.3fr_2fr_2fr_1.5fr_1.5fr]">
-            {["Customer", "Vehicle", "Service", "Status", "Action"].map((h) => (
-              <span key={h} className="text-xs font-semibold text-gray-500">
-                {h}
-              </span>
-            ))}
+        {activeRepairs.length === 0 ? (
+          <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center w-full min-w-0">
+            <FontAwesomeIcon icon={faWrench} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+            <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+              No active repairs
+            </p>
+            <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+              You don't have any active repairs at the moment. Completed repairs will appear in Service History.
+            </p>
           </div>
-
-          {/* Rows */}
-          {activeRepairs.map((r, i) => {
-            const statusStyle = STATUS_STYLES[r.status] || {
-              bg: "bg-gray-100",
-              text: "text-gray-500",
-              dot: "bg-gray-500",
-            };
+        ) : (
+          <>
+            {/* Desktop View (≥ 768px) */}
+            <div className="hidden md:block">
+              {/* Header */}
+              <div className="px-5 py-3.5 border-b border-gray-100 grid gap-3 [grid-template-columns:2.3fr_2fr_2fr_1.5fr_1.5fr]">
+                {["Customer", "Vehicle", "Service", "Status", "Action"].map((h) => (
+                  <span key={h} className="text-xs font-semibold text-gray-500">
+                    {h}
+                  </span>
+                ))}
+              </div>
+              {/* Rows */}
+              {activeRepairs.map((r, i) => {
+                const statusStyle = STATUS_STYLES[r.status] || {
+                  bg: "bg-gray-100",
+                  text: "text-gray-500",
+                  dot: "bg-gray-500",
+                };
             const nextLabel = NEXT_STATUS_LABEL[r.status];
             const isUpdating = updatingId === r.id;
 
@@ -358,6 +371,8 @@ function ActiveRepairs({ fetchActiveRepairCount }) {
             );
           })}
         </div>
+        </>
+        )}
 
         {/* Footer */}
         <div className="px-5 py-3.5 text-center border-t border-gray-100">

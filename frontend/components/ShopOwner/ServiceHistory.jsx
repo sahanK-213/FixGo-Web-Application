@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClipboardList } from "@fortawesome/free-solid-svg-icons";
 import { api, UPLOADS_URL } from "../../src/services/api";
-
 
 function Avatar({ initials, color, size = 32 }) {
   return (
@@ -76,8 +77,14 @@ function ServiceHistory({ shopCategory }) {
 
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs">
         {history.length === 0 ? (
-          <div className="py-12 px-4 text-center text-gray-400 text-sm">
-            No completed services yet.
+          <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center w-full min-w-0">
+            <FontAwesomeIcon icon={faClipboardList} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+            <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+              No service history
+            </p>
+            <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+              Completed service records will appear here once repairs are finished.
+            </p>
           </div>
         ) : (
           <>

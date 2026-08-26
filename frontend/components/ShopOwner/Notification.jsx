@@ -249,9 +249,14 @@ export default function Notification({ setActiveNav, initialSelectedId, onClearS
             {/* Notification Cards List */}
             <div className="flex flex-col gap-3.5">
                 {filteredNotifications.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border border-gray-100 rounded-2xl text-center shadow-xs">
-                        <FontAwesomeIcon icon={faBell} className="text-4xl text-gray-200 mb-3" />
-                        <p className="text-xs font-semibold text-gray-400 m-0">No notifications found in this view.</p>
+                    <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center bg-white border border-gray-100 rounded-2xl shadow-xs w-full min-w-0">
+                        <FontAwesomeIcon icon={faBell} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+                        <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+                            No notifications
+                        </p>
+                        <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+                            You have no notifications in this view. Updates and alerts will appear here.
+                        </p>
                     </div>
                 ) : (
                     filteredNotifications.map((notif) => {

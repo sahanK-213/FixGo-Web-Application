@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { UPLOADS_URL } from "../../../src/services/api";
 
 function ShopGalleryTab({
@@ -137,8 +139,14 @@ function ShopGalleryTab({
           )}
         </>
       ) : (
-        <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
-          No gallery photos added yet. Click + Add Photo to upload images.
+        <div className="p-10 sm:p-12 mb-4 flex flex-col items-center justify-center gap-3 text-center border-2 border-dashed border-slate-200 rounded-2xl w-full min-w-0">
+          <FontAwesomeIcon icon={faImage} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+          <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+            No gallery photos yet
+          </p>
+          <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+            Upload photos of your workshop, equipment, and team to showcase your business to customers.
+          </p>
         </div>
       )}
 

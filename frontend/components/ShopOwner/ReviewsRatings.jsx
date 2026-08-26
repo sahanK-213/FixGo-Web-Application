@@ -268,8 +268,14 @@ function ReviewsRatings() {
             {error}
           </div>
         ) : filteredReviews.length === 0 ? (
-          <div className="py-10 px-5 text-center text-gray-500 text-sm">
-            No reviews to show.
+          <div className="p-10 sm:p-12 flex flex-col items-center justify-center gap-3 text-center w-full min-w-0">
+            <FontAwesomeIcon icon={faStar} className="text-4xl sm:text-5xl text-gray-200 mb-1" />
+            <p className="text-base sm:text-[17px] font-bold text-gray-900 m-0 leading-snug break-words">
+              No reviews yet
+            </p>
+            <p className="text-xs sm:text-[13px] text-gray-500 m-0 max-w-md leading-relaxed whitespace-normal break-words">
+              Customer reviews and ratings will appear here once customers submit feedback for completed repairs.
+            </p>
           </div>
         ) : (
           filteredReviews.map((r, i) => {

@@ -638,7 +638,7 @@ function ShopProfile() {
       </div>
 
       {/* Tab Panel Content */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm min-h-[350px]">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-sm min-h-0 sm:min-h-[250px]">
         {activeTab === "info" && (
           <ShopInfoTab
             shopData={shopData}
