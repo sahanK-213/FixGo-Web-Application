@@ -160,10 +160,12 @@ export function ShopList({ shopsList, isLoading, error, locationName }) {
                                     <FontAwesomeIcon icon={faMessage} />
                                     <span>Within {formatResponseTime(shop.response_time)}</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 shrink-0">
-                                    <FontAwesomeIcon icon={faShieldHalved} />
-                                    <span>Verified</span>
-                                </div>
+                                {Boolean(shop.is_verified) && (
+                                    <div className="flex items-center gap-1.5 shrink-0">
+                                        <FontAwesomeIcon icon={faShieldHalved} />
+                                        <span>Verified</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <button 

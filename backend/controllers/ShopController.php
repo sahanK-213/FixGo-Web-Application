@@ -223,6 +223,20 @@ class ShopController {
         $targetDir = __DIR__ . '/../uploads/shopOwners/';
         $dbImagePath = RequestValidator::handleFileUpload('shopImage', $targetDir, 'shop_', 'uploads/shopOwners/');
 
+        // Handle optional business verification document upload (PDF, PNG, JPG, JPEG, WEBP)
+        $dbVerificationDocPath = null;
+        if (isset($_FILES['verificationDocument']) && $_FILES['verificationDocument']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $verificationTargetDir = __DIR__ . '/../uploads/verificationDocs/';
+            $dbVerificationDocPath = RequestValidator::handleFileUpload(
+                'verificationDocument',
+                $verificationTargetDir,
+                'doc_',
+                'uploads/verificationDocs/',
+                ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
+                5242880 // 5MB
+            );
+        }
+
         // Map Shop Category dynamically from database
         $categoryModel = new Category($this->db);
         $categoryId = $categoryModel->resolveShopCategoryId($category);
@@ -297,6 +311,7 @@ class ShopController {
                         'closeTime' => $closeTime,
                         'carriageService' => $providesCarriage,
                         'BRN' => $licenseNumber,
+                        'verification_document' => $dbVerificationDocPath,
                         'profileImageURL' => $dbImagePath,
                         'driverName' => $defaultDriverName,
                         'driverPhone' => $defaultDriverPhone,
@@ -347,6 +362,7 @@ class ShopController {
                 'closeTime' => $closeTime,
                 'carriageService' => $providesCarriage,
                 'BRN' => $licenseNumber,
+                'verification_document' => $dbVerificationDocPath,
                 'profileImageURL' => $dbImagePath,
                 'driverName' => $defaultDriverName,
                 'driverPhone' => $defaultDriverPhone,
@@ -368,6 +384,12 @@ class ShopController {
             $targetFilePath = __DIR__ . '/../' . $dbImagePath;
             if (file_exists($targetFilePath)) {
                 unlink($targetFilePath);
+            }
+            if ($dbVerificationDocPath) {
+                $docPath = __DIR__ . '/../' . $dbVerificationDocPath;
+                if (file_exists($docPath)) {
+                    unlink($docPath);
+                }
             }
             http_response_code(500);
             echo json_encode(["message" => "Database registration failed: " . $e->getMessage()]);

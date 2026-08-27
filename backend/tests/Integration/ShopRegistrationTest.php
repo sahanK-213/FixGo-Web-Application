@@ -12,7 +12,7 @@ class ShopRegistrationTest extends TestCase {
     private $initialFiles = [];
 
     protected function setUp(): void {
-        putenv('JWT_SECRET=supersecret1234567890abcdef');
+        
         
         $database = new Database();
         $this->db = $database->connect();

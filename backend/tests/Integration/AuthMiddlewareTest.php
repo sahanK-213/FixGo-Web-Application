@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../config/JwtHandler.php';
 class AuthMiddlewareTest extends TestCase {
 
     protected function setUp(): void {
-        putenv('JWT_SECRET=supersecret1234567890abcdef');
+        
     }
 
     private function runIsolatedAuth($token, $requiredRole = '') {
@@ -28,7 +28,8 @@ class AuthMiddlewareTest extends TestCase {
             echo 'SUCCESS';
         ";
         
-        $cmd = "echo " . escapeshellarg($code) . " | REDIRECT_STATUS=1 JWT_SECRET=supersecret1234567890abcdef HTTP_AUTHORIZATION=" . escapeshellarg($authHeader) . " php-cgi 2>/dev/null";
+        $actualSecret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
+        $cmd = "echo " . escapeshellarg($code) . " | REDIRECT_STATUS=1 JWT_SECRET=" . escapeshellarg($actualSecret) . " HTTP_AUTHORIZATION=" . escapeshellarg($authHeader) . " php-cgi 2>/dev/null";
         $output = shell_exec($cmd);
         
         // Parse HTTP Status code

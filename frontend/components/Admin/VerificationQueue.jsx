@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass, faCircleCheck, faTriangleExclamation,
   faFileInvoiceDollar, faUserCheck, faSpinner,
-  faHourglass, faStore, faPhone, faEnvelope, faClock, faMapPin, faTag, faCar, faRotate, faXmark
+  faHourglass, faStore, faPhone, faEnvelope, faClock, faMapPin, faTag, faCar, faRotate, faXmark, faEye
 } from "@fortawesome/free-solid-svg-icons";
 import { FiUploadCloud, FiCheck, FiX, FiRefreshCw, FiEye, FiClock, FiAlertCircle } from "react-icons/fi";
 import { api, UPLOADS_URL } from "../../src/services/api";
@@ -65,7 +65,7 @@ function DetailRow({ icon, label, value }) {
 }
 
 // ── Modal to review a shop's full details before approving ───────────────────
-function ReviewModal({ shop, onClose, onApprove, approving }) {
+function ReviewModal({ shop, onClose, onApprove, approving, onPreviewDoc }) {
     if (!shop) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
@@ -107,6 +107,25 @@ function ReviewModal({ shop, onClose, onApprove, approving }) {
                     <DetailRow icon={faCar}      label="Vehicle Types"   value={shop.vehicleCategories} />
                     <DetailRow icon={faClock}    label="Operating Hours" value={`${shop.openTime} – ${shop.closeTime}`} />
                     {shop.BRN && <DetailRow icon={faTag} label="Business Reg. No." value={shop.BRN} />}
+
+                    {/* Verification Document Section */}
+                    <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between">
+                        <div>
+                            <p className="text-[11px] text-emerald-800 font-bold uppercase tracking-wide m-0">Business Verification Document</p>
+                            <p className="text-xs text-gray-600 m-0 mt-0.5">
+                                {shop.verification_document ? "Document provided for verification" : "No document uploaded (Standard Registration)"}
+                            </p>
+                        </div>
+                        {shop.verification_document && (
+                            <button
+                                type="button"
+                                onClick={() => onPreviewDoc && onPreviewDoc(shop.verification_document)}
+                                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer border-none"
+                            >
+                                <FontAwesomeIcon icon={faEye} /> View Document
+                            </button>
+                        )}
+                    </div>
 
                     {shop.description && (
                         <div>
@@ -163,7 +182,14 @@ function VerificationRow({ shop, isLast, onReview, onApprove, approving }) {
             </div>
 
             {/* Category */}
-            <p className="text-xs text-gray-600 m-0">{shop.category || "—"}</p>
+            <div>
+                <p className="text-xs text-gray-600 m-0">{shop.category || "—"}</p>
+                {shop.verification_document && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md mt-1">
+                        <FontAwesomeIcon icon={faCircleCheck} className="text-[9px]" /> Doc Uploaded
+                    </span>
+                )}
+            </div>
 
             {/* Email-verified status */}
             <span className="flex items-center gap-1.5 text-xs font-semibold text-green-600">
@@ -261,6 +287,29 @@ function SlipPreviewModal({ url, onClose }) {
   );
 }
 
+    // Document Preview Modal (for verification documents)
+    function DocumentPreviewModal({ url, onClose }) {
+      const isImage = /\\.(jpe?g|png)$/i.test(url);
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={onClose}>
+          <div className="bg-white rounded-[18px] shadow-xl max-w-2xl w-full mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <span className="font-bold text-gray-900 text-sm">Verification Document Preview</span>
+              <button onClick={onClose} className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center border-none cursor-pointer hover:bg-gray-200">
+                <FiX size={16} />
+              </button>
+            </div>
+            <div className="p-4 max-h-[70vh] overflow-auto flex items-center justify-center bg-gray-50">
+              {isImage
+                ? <img src={`${UPLOADS_URL}/${url}`} alt="Verification Document" className="max-w-full rounded-lg" />
+                : <iframe src={`${UPLOADS_URL}/${url}`} className="w-full h-[60vh] border-0 rounded-lg" title="Verification Document PDF" />
+              }
+            </div>
+          </div>
+        </div>
+      );
+    }
+
 function PayRow({ inv, isLast, onVerify }) {
   const statusMeta = {
     "Verification Pending": { bg: "bg-amber-50", text: "text-amber-600", icon: <FiClock size={11} /> },
@@ -326,6 +375,7 @@ function VerificationQueue() {
   // Modals
   const [rejectTarget, setRejectTarget] = useState(null);
   const [previewSlip, setPreviewSlip]   = useState(null);
+  const [previewDoc, setPreviewDoc]   = useState(null);
 
   // ── Loaders ──────────────────────────────────────────────────────────────
 
@@ -474,12 +524,13 @@ function VerificationQueue() {
             )}
           </PageCard>
 
-          <ReviewModal
-            shop={reviewShop}
-            onClose={() => setReviewShop(null)}
-            onApprove={handleApproveShop}
-            approving={approving === reviewShop?.id}
-          />
+            <ReviewModal
+              shop={reviewShop}
+              onClose={() => setReviewShop(null)}
+              onApprove={handleApproveShop}
+              approving={approving === reviewShop?.id}
+              onPreviewDoc={(docUrl) => setPreviewDoc(docUrl)}
+            />
         </>
       )}
 
@@ -538,6 +589,9 @@ function VerificationQueue() {
       {/* Slip Preview Modal */}
       {previewSlip && (
         <SlipPreviewModal url={previewSlip} onClose={() => setPreviewSlip(null)} />
+      )}
+      {previewDoc && (
+        <DocumentPreviewModal url={previewDoc} onClose={() => setPreviewDoc(null)} />
       )}
     </div>
   );

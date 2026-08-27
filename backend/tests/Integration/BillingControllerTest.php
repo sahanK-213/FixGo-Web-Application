@@ -23,7 +23,7 @@ class BillingControllerTest extends TestCase {
     private int $testBillingMonth = 1;
 
     protected function setUp(): void {
-        putenv('JWT_SECRET=supersecret1234567890abcdef');
+        
 
         $database   = new Database();
         $this->db   = $database->connect();

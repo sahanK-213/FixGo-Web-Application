@@ -12,7 +12,7 @@ class Shop {
             ->select([
                 'u.id', 'u.email', 's.name', 's.owner', 's.address', 's.contactNumber',
                 's.description', 's.openTime', 's.closeTime', 's.isAvailable',
-                's.carriageService', 's.BRN', 's.profileImageURL',
+                's.carriageService', 's.BRN', 's.verification_document', 's.is_verified', 's.profileImageURL',
                 'ST_Y(s.location) AS latitude', 'ST_X(s.location) AS longitude',
                 '(SELECT COALESCE(ROUND(AVG(rating), 1), 0) FROM review WHERE shop_id = s.id) AS averageRating',
                 '(SELECT COUNT(*) FROM review WHERE shop_id = s.id) AS reviewCount',
@@ -37,6 +37,8 @@ class Shop {
             ->groupBy('s.isAvailable')
             ->groupBy('s.carriageService')
             ->groupBy('s.BRN')
+            ->groupBy('s.verification_document')
+            ->groupBy('s.is_verified')
             ->groupBy('s.profileImageURL')
             ->first();
     }
@@ -48,7 +50,7 @@ class Shop {
         
         $query = $this->qb->table($this->table_name, 's')
             ->select([
-                's.id', 's.name', 's.address', 's.openTime', 's.closeTime', 's.isAvailable',
+                's.id', 's.name', 's.address', 's.openTime', 's.closeTime', 's.isAvailable', 's.is_verified', 's.verification_document',
                 's.profileImageURL as thumbnail_url', 'ST_Y(s.location) as latitude', 'ST_X(s.location) as longitude',
                 "ST_Distance_Sphere(s.location, POINT({$safeLng}, {$safeLat})) AS distance",
                 "(SELECT COALESCE(ROUND(AVG(rating), 1), 0) FROM review WHERE shop_id = s.id) as avg_rating",
@@ -58,10 +60,12 @@ class Shop {
                 "GROUP_CONCAT(DISTINCT sc.name SEPARATOR ', ') as shop_tags",
                 "GROUP_CONCAT(DISTINCT vc.name SEPARATOR ', ') as vehicle_tags"
             ])
+            ->join('users u', 's.id', '=', 'u.id')
             ->leftJoin('shopCategoryMapping scm', 's.id', '=', 'scm.shop_id')
             ->leftJoin('shopCategory sc', 'scm.shop_category_id', '=', 'sc.id')
             ->leftJoin('shopVehicleCategories svc_all', 's.id', '=', 'svc_all.shop_id')
-            ->leftJoin('vehicleCategory vc', 'svc_all.vehicle_category_id', '=', 'vc.id');
+            ->leftJoin('vehicleCategory vc', 'svc_all.vehicle_category_id', '=', 'vc.id')
+            ->where('u.isActive', 1);
 
         if ($vehicleCategoryId !== null) {
             $query->join('shopVehicleCategories svc_filter', 's.id', '=', 'svc_filter.shop_id');
@@ -111,12 +115,18 @@ class Shop {
     public function getShopDetails($shopId, $customerId = null) {
         $details = [];
 
-        $info = $this->qb->table('shop')->select([
-            'id', 'name', 'address', 'contactNumber as phone', 'description', 
-            'openTime', 'closeTime', 'isAvailable', 'carriageService', 'profileImageURL',
-            "(SELECT COALESCE(ROUND(AVG(TIMESTAMPDIFF(MINUTE, sr.created_at, sr.accepted_at))), 15) FROM serviceRequest sr WHERE sr.shop_id = shop.id AND sr.accepted_at IS NOT NULL) as response_time_minutes",
-            "ST_Y(shop.location) as lat", "ST_X(shop.location) as lng"
-        ])->where('id', $shopId)->first();
+        $info = $this->qb->table('shop', 's')
+            ->join('users u', 's.id', '=', 'u.id')
+            ->select([
+                's.id', 's.name', 's.address', 's.contactNumber as phone', 's.description', 
+                's.openTime', 's.closeTime', 's.isAvailable', 's.carriageService', 's.profileImageURL',
+                's.verification_document', 's.is_verified',
+                "(SELECT COALESCE(ROUND(AVG(TIMESTAMPDIFF(MINUTE, sr.created_at, sr.accepted_at))), 15) FROM serviceRequest sr WHERE sr.shop_id = s.id AND sr.accepted_at IS NOT NULL) as response_time_minutes",
+                "ST_Y(s.location) as lat", "ST_X(s.location) as lng"
+            ])
+            ->where('s.id', $shopId)
+            ->where('u.isActive', 1)
+            ->first();
 
         if (!$info) return null;
 
@@ -285,6 +295,8 @@ class Shop {
                 'isAvailable' => 1,
                 'carriageService' => $shopData['carriageService'],
                 'BRN' => $shopData['BRN'],
+                'verification_document' => $shopData['verification_document'] ?? null,
+                'is_verified' => 0,
                 'profileImageURL' => $shopData['profileImageURL'],
                 'default_driver_name' => $shopData['driverName'],
                 'default_driver_phone' => $shopData['driverPhone'],
@@ -350,6 +362,11 @@ class Shop {
                 'default_truck_color' => $shopData['truckColor'],
                 'tow_truck_plate' => $shopData['truckPlate']
             ];
+
+            if (array_key_exists('verification_document', $shopData) && $shopData['verification_document'] !== null) {
+                $shopPayload['verification_document'] = $shopData['verification_document'];
+                $shopPayload['is_verified'] = 0;
+            }
 
             if (!empty($shopData['profileImageURL'])) {
                 $shopPayload['profileImageURL'] = $shopData['profileImageURL'];
@@ -561,6 +578,11 @@ class Shop {
             ->update(['isActive' => 1]);
 
         if ($stmt->rowCount() > 0) {
+            // Check if this shop has uploaded a verification document
+            $shop = $this->qb->table('shop')->where('id', $shopId)->select(['verification_document'])->first();
+            if ($shop && !empty($shop['verification_document'])) {
+                $this->qb->table('shop')->where('id', $shopId)->update(['is_verified' => 1]);
+            }
             return 'approved';
         }
 
@@ -577,7 +599,7 @@ class Shop {
             ->select([
                 'u.id', 'u.email', 'u.is_email_verified', 's.name AS shopName',
                 's.owner AS ownerName', 's.address', 's.contactNumber', 's.description',
-                's.openTime', 's.closeTime', 's.carriageService', 's.BRN', 's.profileImageURL',
+                's.openTime', 's.closeTime', 's.carriageService', 's.BRN', 's.verification_document', 's.is_verified', 's.profileImageURL',
                 "GROUP_CONCAT(DISTINCT sc.name  SEPARATOR ', ') AS category",
                 "GROUP_CONCAT(DISTINCT vc.name  SEPARATOR ', ') AS vehicleCategories"
             ])
@@ -589,6 +611,7 @@ class Shop {
             ->where('u.userRole', 'shop_owner')
             ->where('u.is_email_verified', 1)
             ->where('u.isActive', 0)
+            ->where('u.email', 'NOT LIKE', 'deleted_%')
             ->groupBy('u.id')
             ->groupBy('s.name')
             ->groupBy('s.owner')
@@ -599,6 +622,8 @@ class Shop {
             ->groupBy('s.closeTime')
             ->groupBy('s.carriageService')
             ->groupBy('s.BRN')
+            ->groupBy('s.verification_document')
+            ->groupBy('s.is_verified')
             ->groupBy('s.profileImageURL')
             ->orderBy('u.id', 'DESC')
             ->get();

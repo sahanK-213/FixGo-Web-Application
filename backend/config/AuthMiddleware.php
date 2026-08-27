@@ -17,8 +17,18 @@ class AuthMiddleware
      */
     public static function authenticate(array $allowedRoles = [])
     {
-        $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? '';
+        // php-cgi (used in tests) and some servers alter header casing.
+        // Convert all headers to UPPERCASE for reliable extraction.
+        // php-cgi (used in tests) and some servers alter header casing or don't have getallheaders().
+        $headers = [];
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if (is_array($headers)) {
+                $headers = array_change_key_case($headers, CASE_UPPER);
+            }
+        }
+        
+        $authHeader = $headers['AUTHORIZATION'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
         if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             http_response_code(401);

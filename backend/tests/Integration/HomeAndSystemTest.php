@@ -12,7 +12,7 @@ class HomeAndSystemTest extends TestCase {
     private $originalTerms;
 
     protected function setUp(): void {
-        putenv('JWT_SECRET=supersecret1234567890abcdef');
+        
         putenv('MIGRATION_API_KEY=test-migration-key');
 
         $database = new Database();

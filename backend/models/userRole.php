@@ -205,6 +205,7 @@ class User {
                 'token_expiry' => null,
                 'reset_token_expiry' => null
             ]);
+            
         return true;
     }
 }

@@ -11,7 +11,9 @@ import {
   faWrench,
   faFileLines,
   faPenToSquare,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { UPLOADS_URL } from "../../../src/services/api";
 
 export const VEHICLE_CAT_OPTIONS = [
   "3 Wheelers & Bikes",
@@ -115,6 +117,24 @@ function ShopInfoTab({
                 <FontAwesomeIcon icon={faClipboardList} className="text-slate-400" /> Reg. No. (Read-Only)
               </span>
               <span className="text-slate-900 font-bold">{shopData.BRN || "Not Available"}</span>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <span className="text-slate-500 font-medium flex items-center gap-2">
+                <FontAwesomeIcon icon={faFileLines} className="text-slate-400" /> Verification Doc
+              </span>
+              {shopData.verification_document ? (
+                <a
+                  href={`${UPLOADS_URL}/${shopData.verification_document}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-600 font-bold hover:underline inline-flex items-center gap-1"
+                >
+                  View Document ↗
+                </a>
+              ) : (
+                <span className="text-slate-400 font-medium">Not Uploaded</span>
+              )}
             </div>
           </div>
 

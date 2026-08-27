@@ -37,6 +37,8 @@ export default function ShopForm() {
     });
     const [shopImage, setShopImage] = useState(null);
     const [shopImagePreview, setShopImagePreview] = useState("");
+    const [verificationDoc, setVerificationDoc] = useState(null);
+    const [verificationDocName, setVerificationDocName] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const [availableCategories, setAvailableCategories] = useState([]);
@@ -114,6 +116,29 @@ export default function ShopForm() {
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const handleVerificationDocChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                setError("Business Verification Document size must be less than 5MB.");
+                return;
+            }
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                setError("Only PDF, PNG, JPG, or WEBP documents are allowed.");
+                return;
+            }
+            setVerificationDoc(file);
+            setVerificationDocName(file.name);
+            setError("");
+        }
+    };
+
+    const handleRemoveVerificationDoc = () => {
+        setVerificationDoc(null);
+        setVerificationDocName("");
     };
 
     const handleMapClick = (e) => {
@@ -263,6 +288,9 @@ export default function ShopForm() {
         payload.append("defaultTruckBrand", trimTruckBrand);
         payload.append("defaultTruckColor", trimTruckColor);
         payload.append("towTruckPlate", trimTowPlate);
+        if (verificationDoc) {
+            payload.append("verificationDocument", verificationDoc);
+        }
 
         try {
             await api.postPublic('auth/registerShop.php', payload);
@@ -375,7 +403,10 @@ export default function ShopForm() {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-semibold text-gray-600 uppercase">Business License / BRN</label>
+                        <label className="block text-xs font-semibold text-gray-600 uppercase">
+                            Business License / BRN
+                            <span className="ml-1.5 normal-case font-normal text-gray-400">(optional)</span>
+                        </label>
                         <input
                             type="text"
                             name="licenseNumber"
@@ -401,6 +432,57 @@ export default function ShopForm() {
                                 </option>
                             ))}
                         </select>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-600 uppercase">
+                            Verification Document
+                            <span className="ml-1.5 normal-case font-normal text-gray-400">(optional)</span>
+                        </label>
+                        {!verificationDocName ? (
+                            <div className="mt-1 flex items-center gap-3 bg-slate-50 p-2.5 rounded-lg border border-gray-300">
+                                <input
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                    onChange={handleVerificationDocChange}
+                                    className="hidden"
+                                    id="verification-doc-upload"
+                                />
+                                <label
+                                    htmlFor="verification-doc-upload"
+                                    className="inline-block px-3 py-1.5 border border-gray-300 rounded-md text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-all shadow-sm shrink-0"
+                                >
+                                    Choose File
+                                </label>
+                                <span className="text-[10px] text-gray-400 leading-tight">
+                                    PDF, JPG, PNG · 5MB max<br />
+                                    <span className="text-green-600 font-semibold">Verified Badge</span> on approval
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="mt-1 flex items-center gap-3 bg-slate-50 p-2.5 rounded-lg border border-gray-300">
+                                <input
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                    onChange={handleVerificationDocChange}
+                                    className="hidden"
+                                    id="verification-doc-upload"
+                                />
+                                <label
+                                    htmlFor="verification-doc-upload"
+                                    className="inline-block px-3 py-1.5 border border-gray-300 rounded-md text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-all shadow-sm shrink-0"
+                                >
+                                    Change
+                                </label>
+                                <span className="text-xs text-gray-600 truncate flex-1">{verificationDocName}</span>
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveVerificationDoc}
+                                    className="text-xs text-red-400 hover:text-red-600 font-semibold shrink-0 transition-colors"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        )}
                     </div>
                     <div className="md:col-span-2">
                         <label className="block text-xs font-semibold text-gray-600 uppercase mb-2">Vehicle Categories Serviced</label>

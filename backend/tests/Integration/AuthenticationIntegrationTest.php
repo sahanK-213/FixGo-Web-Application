@@ -13,7 +13,7 @@ class AuthenticationIntegrationTest extends TestCase {
     private $wrapperPath;
 
     protected function setUp(): void {
-        putenv('JWT_SECRET=supersecret1234567890abcdef');
+        
         
         $database = new Database();
         $this->db = $database->connect();
@@ -76,7 +76,8 @@ class AuthenticationIntegrationTest extends TestCase {
     private function runAuthRequest($method, $payload) {
         $payloadStr = json_encode($payload);
         $contentLength = strlen($payloadStr);
-        $cmd = "echo " . escapeshellarg($payloadStr) . " | SCRIPT_FILENAME=" . escapeshellarg($this->wrapperPath) . " REDIRECT_STATUS=1 REQUEST_METHOD=POST CONTENT_TYPE=application/json CONTENT_LENGTH={$contentLength} HTTP_X_METHOD={$method} JWT_SECRET=supersecret1234567890abcdef php-cgi 2>/dev/null";
+        $actualSecret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
+        $cmd = "echo " . escapeshellarg($payloadStr) . " | SCRIPT_FILENAME=" . escapeshellarg($this->wrapperPath) . " REDIRECT_STATUS=1 REQUEST_METHOD=POST CONTENT_TYPE=application/json CONTENT_LENGTH={$contentLength} HTTP_X_METHOD={$method} JWT_SECRET=" . escapeshellarg($actualSecret) . " php-cgi 2>/dev/null";
         
         $output = shell_exec($cmd);
         

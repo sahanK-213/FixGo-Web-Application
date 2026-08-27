@@ -525,9 +525,19 @@ function ShopProfile() {
               <h2 className="text-2xl font-extrabold text-slate-900 m-0">
                 {shopData.name}
               </h2>
-              <span className="bg-green-50 text-green-600 border border-green-200/80 rounded-full py-0.5 px-3 text-xs font-semibold inline-flex items-center gap-1">
-                <FontAwesomeIcon icon={faCheck} /> Verified
-              </span>
+              {Number(shopData?.is_verified) === 1 ? (
+                <span className="bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-full py-0.5 px-3 text-xs font-bold inline-flex items-center gap-1.5 shadow-sm">
+                  <FontAwesomeIcon icon={faCheck} className="text-emerald-600" /> Verified
+                </span>
+              ) : shopData?.verification_document ? (
+                <span className="bg-amber-50 text-amber-700 border border-amber-200 rounded-full py-0.5 px-2.5 text-xs font-medium inline-flex items-center gap-1">
+                  <FontAwesomeIcon icon={faClock} className="text-amber-500" /> Verification Pending
+                </span>
+              ) : (
+                <span className="bg-gray-100 text-gray-600 border border-gray-200 rounded-full py-0.5 px-2.5 text-xs font-medium inline-flex items-center gap-1">
+                  Standard Shop
+                </span>
+              )}
 
               {/* Shop Availability Badge */}
               <button

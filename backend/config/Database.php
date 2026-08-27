@@ -7,10 +7,10 @@ class Database {
     private $conn;
 
     public function __construct() {
-        $this->host = getenv('DB_HOST');
-        $this->db_name = getenv('DB_NAME');
+        $this->host     = getenv('DB_HOST');
+        $this->db_name  = getenv('DB_NAME');
         $this->username = getenv('DB_USER');
-        $this->password = getenv('DB_PASS');
+        $this->password = getenv('DB_PASS') ?: '';
     }
 
     public function connect() {

@@ -21,9 +21,11 @@ export const ShopInfo = ({ info, stats, shopCategories, vehicleCategories, passe
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{info.name}</h1>
-          <span className="flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold text-white shadow-sm">
-            <FaCheckCircle className="text-white/90" /> Verified
-          </span>
+          {Number(info?.is_verified) === 1 && (
+            <span className="flex items-center gap-1.5 rounded-full bg-[#16a34a] px-3 py-1 text-xs font-bold text-white shadow-sm">
+              <FaCheckCircle className="text-white/90" /> Verified
+            </span>
+          )}
         </div>
 
         {onReportGarage && (

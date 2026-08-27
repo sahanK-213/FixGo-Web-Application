@@ -73,6 +73,7 @@ class SearchController {
                     "response_time" => $row['response_time_minutes'] . " mins",
                     "thumbnail_url" => $row['thumbnail_url'] ? $row['thumbnail_url'] : 'https://via.placeholder.com/300x200?text=No+Image',
                     "tags" => array_values($combinedTags),
+                    "is_verified" => (int)($row['is_verified'] ?? 0) === 1,
                     
                     // ADDED: Pass the coordinates from the SQL row into the JSON output
                     "latitude" => (float) $row['latitude'],
